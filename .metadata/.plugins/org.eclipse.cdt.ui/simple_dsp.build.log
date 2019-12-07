@@ -1,0 +1,10 @@
+21:17:35 **** Incremental Build of configuration Debug for project simple_dsp ****
+make -j4 all 
+arm-none-eabi-size   simple_dsp.elf 
+   text	   data	    bss	    dec	    hex	filename
+   7628	     20	   1716	   9364	   2494	simple_dsp.elf
+Finished building: default.size.stdout
+ 
+
+21:17:36 Build Finished. 0 errors, 0 warnings. (took 1s.141ms)
+
