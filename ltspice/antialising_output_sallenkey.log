@@ -1,0 +1,21 @@
+Circuit: * Z:\home\javi\github_projects\simple_dsp\ltspice\antialising_output_sallenkey.asc
+
+I1: both pins shorted together -- ignoring.
+Direct Newton iteration for .op point succeeded.
+
+Date: Wed Dec 11 22:16:22 2019
+Total elapsed time: 0.063 seconds.
+
+tnom = 27
+temp = 27
+method = trap
+totiter = 3
+traniter = 0
+tranpoints = 0
+accept = 0
+rejected = 0
+matrix size = 12
+fillins = 3
+solver = Normal
+Matrix Compiler1:      34 opcodes
+Matrix Compiler2: 1020 bytes object code size
