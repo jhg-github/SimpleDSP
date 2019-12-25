@@ -20,8 +20,6 @@ Core/Src/stm32f3xx_hal_msp.o: ../Core/Src/stm32f3xx_hal_msp.c \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_cortex.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_adc.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_adc_ex.h \
- ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_dac.h \
- ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_dac_ex.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_flash.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_flash_ex.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_i2c.h \
@@ -30,6 +28,9 @@ Core/Src/stm32f3xx_hal_msp.o: ../Core/Src/stm32f3xx_hal_msp.c \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_pwr_ex.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart_ex.h \
+ ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_dac.h \
+ ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_dma.h \
+ ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_tim.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_system.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_gpio.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_exti.h \
@@ -37,8 +38,7 @@ Core/Src/stm32f3xx_hal_msp.o: ../Core/Src/stm32f3xx_hal_msp.c \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_cortex.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_rcc.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_utils.h \
- ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_pwr.h \
- ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_dma.h
+ ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_pwr.h
 
 ../Core/Inc/main.h:
 
@@ -84,10 +84,6 @@ Core/Src/stm32f3xx_hal_msp.o: ../Core/Src/stm32f3xx_hal_msp.c \
 
 ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_adc_ex.h:
 
-../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_dac.h:
-
-../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_dac_ex.h:
-
 ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_flash.h:
 
 ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_flash_ex.h:
@@ -104,6 +100,12 @@ Core/Src/stm32f3xx_hal_msp.o: ../Core/Src/stm32f3xx_hal_msp.c \
 
 ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart_ex.h:
 
+../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_dac.h:
+
+../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_dma.h:
+
+../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_tim.h:
+
 ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_system.h:
 
 ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_gpio.h:
@@ -119,5 +121,3 @@ Core/Src/stm32f3xx_hal_msp.o: ../Core/Src/stm32f3xx_hal_msp.c \
 ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_utils.h:
 
 ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_pwr.h:
-
-../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_dma.h:
