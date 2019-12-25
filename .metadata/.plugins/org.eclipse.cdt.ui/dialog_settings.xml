@@ -20,4 +20,16 @@
 		<item key="DIALOG_HEIGHT" value="489"/>
 		<item key="DIALOG_FONT_NAME" value="1|Ubuntu|11.0|0|GTK|1|"/>
 	</section>
+	<section name="PDOMSearchPage">
+		<item key="caseSensitive" value="false"/>
+		<item key="searchFlags" value="227191"/>
+		<list key="previousPatterns">
+			<item value="LL_SYSCFG_SetRemapDMA_DAC"/>
+			<item value="LL_DMA_ConfigTransfer"/>
+		</list>
+	</section>
+	<section name="org.eclipse.cdt.ui.text.hover.CMacroExpansionExploration.internal">
+		<item key="size.width" value="448"/>
+		<item key="size.height" value="180"/>
+	</section>
 </section>

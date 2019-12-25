@@ -1600,3 +1600,9 @@ Command-line arguments:  -os linux -ws gtk -arch x86_64
 
 !ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2019-12-25 17:32:52.477
 !MESSAGE Started RMI Server, listening on port 41338
+
+!ENTRY org.eclipse.cdt.dsf 4 10001 2019-12-25 18:11:35.546
+!MESSAGE Target not available.
+
+!ENTRY org.eclipse.cdt.dsf 4 10001 2019-12-25 18:15:23.715
+!MESSAGE Target not available.
