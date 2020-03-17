@@ -5,7 +5,7 @@
 fs = 48000;         % Sampling frequency                    
 Ts = 1/fs;          % Sampling period
 fnyq = fs / 2;      % Nyquist frequency
-L = 480;            % Length of signal
+L = 1024;            % Length of signal
 t = (0:L-1)*Ts;     % Time vector
 f1 = 200;           % Signal frequency components
 f2 = 400;           %
@@ -32,20 +32,17 @@ xn = sin(2*pi*f1*t) + sin(2*pi*f2*t) + sin(2*pi*f3*t) + sin(2*pi*f4*t) + sin(2*p
 
 %-- signal fft --
 f = fs*(0:(L/2))/L;
-Xm = fft(xn);
+xn_win = xn'.*hanning(L);
+Xm = fft(xn_win);
 P2 = abs(Xm/L);
 P1 = P2(1:L/2+1);
 P1(2:end-1) = 2*P1(2:end-1);
+P1_db = 20*log10(P1);
 
 %-- decimation filter --
 fs_dec = fs / decimation;   % Sampling frequency after decimation
 fstop = fs_dec - B;
-fpass = B;
-n_hdec = ceil( atten_db / ( 22 * ( fstop/fs - fpass/fs ) ) );
 n_hdec = 50;
-hdec_f =   [0 (fpass/fnyq) (fstop/fnyq) 1];
-hdec_mag = [1 0.7079          0.001      0.001];
-hdec_k = fir2(n_hdec,hdec_f,hdec_mag);
 hdec_k = fir1(n_hdec,(fpass/fnyq));
 
 %-- decimation filter fft --
@@ -54,6 +51,18 @@ Hdecm_P2 = abs(Hdecm/1);    % don't divide because filter coefficients are alrea
 Hdecm_P1 = Hdecm_P2(1:L/2+1);
 Hdecm_P1(2:end-1) = Hdecm_P1(2:end-1);
 Hdecm_db = 20*log10(Hdecm_P1);
+
+%-- decimate signal --
+xn_dec = filter(hdec_k,1,xn);
+
+%-- decimate signal fft --
+f = fs*(0:(L/2))/L;
+xn_dec_win = xn_dec'.*hanning(L);
+Xm_dec = fft(xn_dec_win);
+P2_dec = abs(Xm_dec/L);
+P1_dec = P2_dec(1:L/2+1);
+P1_dec(2:end-1) = 2*P1_dec(2:end-1);
+P1_dec_db = 20*log10(P1_dec);
 
 % %-- lowpass filter --
 % hl_f =   [0 (hlow_fpass/Fs) (hlow_fstop/Fs) 1];
@@ -77,7 +86,8 @@ xlabel('t (s)')
 ylabel('x(n)')
 
 subplot(5,2,2)
-plot(f,P1) 
+% plot(f,P1) 
+plot(f,P1_db) 
 grid on
 title('Single-Sided Amplitude Spectrum of Signal')
 xlabel('f (Hz)')
@@ -96,6 +106,21 @@ grid on
 title('Single-Sided Amplitude Spectrum of Hdec(m)')
 xlabel('f (Hz)')
 ylabel('|Hdecm_P1(db)|')
+
+subplot(5,2,5)
+plot(t, xn_dec)
+grid on
+title('Signal decimated')
+xlabel('t (s)')
+ylabel('xdec(n)')
+
+subplot(5,2,6)
+% plot(f,P1) 
+plot(f,P1_dec_db) 
+grid on
+title('Single-Sided Amplitude Spectrum of Decimated Signal')
+xlabel('f (Hz)')
+ylabel('|P1(f)|')
 
 % subplot(5,2,3)
 % stem((0:nfir), hl_k)
