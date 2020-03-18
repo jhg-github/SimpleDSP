@@ -5,10 +5,8 @@ clear
 fs = 48000;         % Sampling frequency                    
 Ts = 1/fs;          % Sampling period
 fnyq = fs / 2;      % Nyquist frequency
-L = 48000;            % Length of signal
+L = 48000;          % Length of signal
 t = (0:L-1)*Ts;     % Time vector
-
-% B = 2200;             % Signal bandwidth
 % atten_db = 60;      % Attenuation [db]. Aprox. 10 bits [ENOB], atten = 10 * 6.02 + 1.76 
 
 % hlow_fpass = 600;
@@ -48,28 +46,27 @@ n_hdec = 50;                        % Decimation filter order
 hdec_k = fir1(n_hdec,(B/fnyq));     % Decimation filter coeficients
 
 %-- decimation filter fft --
-Hdecm = fft( [hdec_k zeros(1, L - length(hdec_k))] );
+Hdecm = fft( [hdec_k zeros(1, L - length(hdec_k))] ); % Single sided FFT
 Hdecm_P2 = abs(Hdecm/1);                % Don't divide because filter coefficients are already scaled
-Hdecm_P1 = Hdecm_P2(1:L/2+1);           % Single sided FFT
+Hdecm_P1 = Hdecm_P2(1:L/2+1);           % 
 Hdecm_P1(2:end-1) = Hdecm_P1(2:end-1);  %
-Hdecm_P1_db = 20*log10(Hdecm_P1);        %
+Hdecm_P1_db = 20*log10(Hdecm_P1);       %
 
+%-- decimate signal --
+xn_dec = filter(hdec_k,1,xn);               % Filter signal
+xn_dec = downsample(xn_dec, decimation);    % Downlsample signal
+t_dec = downsample(t, decimation);          % Decimate time vector
 
-% 
-% %-- decimate signal --
-% xn_dec = filter(hdec_k,1,xn);
-% xn_dec = downsample(xn_dec, decimation);
-% L = length(xn_dec);
-% 
-% %-- decimate signal fft --
-% f_dec = fs*(0:(L/2))/L;
-% xn_dec_win = xn_dec'.*hanning(L);
-% Xm_dec = fft(xn_dec_win);
-% P2_dec = abs(Xm_dec/L);
-% P1_dec = P2_dec(1:L/2+1);
-% P1_dec(2:end-1) = 2*P1_dec(2:end-1);
-% P1_dec_db = 20*log10(P1_dec);
-% 
+%-- decimate signal fft --
+L_dec = length(xn_dec);                 % Lenght of decimated signal
+f_dec = fs_dec*(0:(L_dec/2))/L_dec;     % Decimated frequency vector
+xn_dec_win = xn_dec'.*hanning(L_dec);   % Windowing
+Xm_dec = fft(xn_dec_win);               % Single sided FFT
+P2_dec = abs(Xm_dec/L_dec);             %
+P1_dec = P2_dec(1:L_dec/2+1);           %
+P1_dec(2:end-1) = 2*P1_dec(2:end-1);    %
+P1_dec_db = 20*log10(P1_dec);           %
+
 % % %-- lowpass filter --
 % % hl_f =   [0 (hlow_fpass/Fs) (hlow_fstop/Fs) 1];
 % % hl_mag = [1 1               0               0];
@@ -85,7 +82,7 @@ Hdecm_P1_db = 20*log10(Hdecm_P1);        %
 %-- plots --
 %figure
 subplot(5,2,1)
-stem(t, xn)
+plot(t, xn)
 grid on
 title('Signal')
 xlabel('t (s)')
@@ -113,21 +110,21 @@ title('Single-Sided Amplitude Spectrum of Hdec(m)')
 xlabel('f (Hz)')
 ylabel('Hdecm_P1(db)')
 
-% subplot(5,2,5)
-% stem(t, xn_dec)
-% grid on
-% title('Signal decimated')
-% xlabel('t (s)')
-% ylabel('xdec(n)')
-% 
-% subplot(5,2,6)
-% % plot(f,P1) 
-% plot(f,P1_dec_db) 
-% grid on
-% title('Single-Sided Amplitude Spectrum of Decimated Signal')
-% xlabel('f (Hz)')
-% ylabel('|P1(f)|')
-% 
+subplot(5,2,5)
+plot(t_dec, xn_dec)
+grid on
+title('Signal decimated')
+xlabel('t_dec(s)')
+ylabel('xdec(n)')
+
+subplot(5,2,6)
+% plot(f_dec,P1_dec) 
+plot(f_dec,P1_dec_db) 
+grid on
+title('Single-Sided Spectrum of Decimated Signal')
+xlabel('f (Hz)')
+ylabel('P1_dec(f) dB')
+
 % % subplot(5,2,3)
 % % stem((0:nfir), hl_k)
 % % grid on
