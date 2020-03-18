@@ -138,3 +138,14 @@ ylabel('P1_dec(f) dB')
 % % title('Single-Sided Amplitude Spectrum of Hl(m)')
 % % xlabel('f (Hz)')
 % % ylabel('|Hlm_P1(f)|')
+
+%-- prints --
+
+hdec_k_str = sprintf('%ef,', hdec_k);
+hdec_k_str = hdec_k_str(1:end-1);       % strip final comma
+hedc_k_len_str = sprintf('%d', length(hdec_k));
+hdec_k_str = strcat('float hdec_k[', hedc_k_len_str, '] = {', hdec_k_str , '};');
+
+fid = fopen('c_arrays.txt','wt');
+fprintf(fid, '%s\n', hdec_k_str);
+fclose(fid);
