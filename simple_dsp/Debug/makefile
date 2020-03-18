@@ -37,8 +37,8 @@ simple_dsp.list \
 all: simple_dsp.elf secondary-outputs
 
 # Tool invocations
-simple_dsp.elf: $(OBJS) $(USER_OBJS) /home/javi/github_projects/simple_dsp/simple_dsp/STM32F303RETX_FLASH.ld
-	arm-none-eabi-gcc -o "simple_dsp.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/javi/github_projects/simple_dsp/simple_dsp/STM32F303RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="simple_dsp.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+simple_dsp.elf: $(OBJS) $(USER_OBJS) /home/javi/github_projects/simple_dsp_filtering/simple_dsp/STM32F303RETX_FLASH.ld
+	arm-none-eabi-gcc -o "simple_dsp.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/javi/github_projects/simple_dsp_filtering/simple_dsp/STM32F303RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="simple_dsp.map" -Wl,--gc-sections -static -L"/home/javi/github_projects/simple_dsp_filtering/simple_dsp/Lib" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
