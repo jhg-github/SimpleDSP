@@ -5,7 +5,7 @@ clear
 fs = 48000;         % Sampling frequency                    
 Ts = 1/fs;          % Sampling period
 fnyq = fs / 2;      % Nyquist frequency
-L = 48000;          % Length of signal
+L = 64;          % Length of signal
 t = (0:L-1)*Ts;     % Time vector
 % atten_db = 60;      % Attenuation [db]. Aprox. 10 bits [ENOB], atten = 10 * 6.02 + 1.76 
 
@@ -139,13 +139,28 @@ ylabel('P1_dec(f) dB')
 % % xlabel('f (Hz)')
 % % ylabel('|Hlm_P1(f)|')
 
+
 %-- prints --
 
+%-- input signal
+xn_str = sprintf('%ef,', xn);
+xn_str = xn_str(1:end-1);
+xn_str = strcat('float src[FILTER_DEC_SRC_BLOCK_SIZE] = {', xn_str , '};');
+
+%-- decimation filter coefficients
 hdec_k_str = sprintf('%ef,', hdec_k);
-hdec_k_str = hdec_k_str(1:end-1);       % strip final comma
+hdec_k_str = hdec_k_str(1:end-1);
 hedc_k_len_str = sprintf('%d', length(hdec_k));
 hdec_k_str = strcat('float hdec_k[', hedc_k_len_str, '] = {', hdec_k_str , '};');
 
+%-- decimation signal
+xn_dec_str = sprintf('%ef,', xn_dec);
+xn_dec_str = xn_dec_str(1:end-1);
+xn_dec_str = strcat('float test_dst[FILTER_DEC_DEST_BLOCK_SIZE] = {', xn_dec_str , '};');
+
+%-- create text file
 fid = fopen('c_arrays.txt','wt');
-fprintf(fid, '%s\n', hdec_k_str);
+fprintf(fid, '%s\n\n', hdec_k_str);
+fprintf(fid, '%s\n\n', xn_str);
+fprintf(fid, '%s\n\n', xn_dec_str);
 fclose(fid);
