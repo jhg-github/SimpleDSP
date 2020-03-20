@@ -5,7 +5,7 @@ clear
 fs = 48000;         % Sampling frequency                    
 Ts = 1/fs;          % Sampling period
 fnyq = fs / 2;      % Nyquist frequency
-L = 64;          % Length of signal
+L = 1024;           % Length of signal
 t = (0:L-1)*Ts;     % Time vector
 % atten_db = 60;      % Attenuation [db]. Aprox. 10 bits [ENOB], atten = 10 * 6.02 + 1.76 
 
