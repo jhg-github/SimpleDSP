@@ -158,12 +158,12 @@ xlabel('t_dec(s)')
 ylabel('xn_low(n)')
 
 subplot(5,4,12)
-% plot(f_dec,P1_low) 
+% plot(f_dec,P1_dec) 
 plot(f_dec,P1_low_db) 
 grid on
-title('Single-Sided Spectrum of Lowpass Signal')
+title('Single-Sided Spectrum of Decimated Signal')
 xlabel('f (Hz)')
-ylabel('P1_low(f) dB')
+ylabel('P1_low_db(f) dB')
 
 
 %-- prints --
