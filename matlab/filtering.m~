@@ -5,7 +5,7 @@ clear
 fs = 48000;         % Sampling frequency                    
 Ts = 1/fs;          % Sampling period
 fnyq = fs / 2;      % Nyquist frequency
-L = 48000;           % Length of signal
+L = 1024;           % Length of signal
 t = (0:L-1)*Ts;     % Time vector
 
 %-- signal --
@@ -108,7 +108,7 @@ P1_band_db = 20*log10(P1_band);           %
 %-- highpass filter --
 hh_fpass = 1600;                            % Highpass filter cutoff=1600Hz
 n_hh = 50;                                  % Highpass filter order
-hh_k = fir1(n_hh,(hh_fpass/fnyq_dec));      % Highpass filter coeficients
+hh_k = fir1(n_hh,(hh_fpass/fnyq_dec),'high');      % Highpass filter coeficients
 
 %-- highpass filter fft --
 Hhm = fft( [hh_k zeros(1, L_dec - length(hh_k))] );     % Highpass frequency response
@@ -117,16 +117,16 @@ Hhm_P1 = Hhm_P2(1:L_dec/2+1);                           %
 Hhm_P1(2:end-1) = Hhm_P1(2:end-1);                      %
 Hhm_P1_db = 20*log10(Hhm_P1);                           %
 
-%-- lowpass signal --
-xn_low = filter(hl_k,1,xn_dec);
+%-- highpass signal --
+xn_high = filter(hh_k,1,xn_dec);
 
-%-- lowpass signal fft --
-xn_low_win = xn_low'.*hanning(L_dec);   % Windowing
-Xm_low = fft(xn_low_win);               % Single sided FFT
-P2_low = abs(Xm_low/L_dec);             %
-P1_low = P2_low(1:L_dec/2+1);           %
-P1_low(2:end-1) = 2*P1_low(2:end-1);    %
-P1_low_db = 20*log10(P1_low);           %
+%-- highpass signal fft --
+xn_high_win = xn_high'.*hanning(L_dec);   % Windowing
+Xm_high = fft(xn_high_win);               % Single sided FFT
+P2_high = abs(Xm_high/L_dec);             %
+P1_high = P2_high(1:L_dec/2+1);           %
+P1_high(2:end-1) = 2*P1_high(2:end-1);    %
+P1_high_db = 20*log10(P1_high);           %
 
 
 
@@ -265,7 +265,7 @@ title('Signal Highpass')
 xlabel('t_dec(s)')
 ylabel('xn_high(n)')
 
-subplot(5,4,12)
+subplot(5,4,20)
 % plot(f_dec,P1_low) 
 plot(f_dec,P1_high_db) 
 grid on
@@ -285,7 +285,7 @@ xn_str = strcat('float src[FILTER_DEC_SRC_BLOCK_SIZE] = {', xn_str , '};');
 hdec_k_str = sprintf('%ef,', hdec_k);
 hdec_k_str = hdec_k_str(1:end-1);
 hedc_k_len_str = sprintf('%d', length(hdec_k));
-hdec_k_str = strcat('float hdec_k[', hedc_k_len_str, '] = {', hdec_k_str , '};');
+hdec_k_str = strcat('float filter_dec_coeffs[FILTER_DEC_NTAPS] = {', hdec_k_str , '};');
 
 %-- decimation signal
 xn_dec_str = sprintf('%ef,', xn_dec);
@@ -296,11 +296,42 @@ xn_dec_str = strcat('float test_dst[FILTER_DEC_DEST_BLOCK_SIZE] = {', xn_dec_str
 hlow_k_str = sprintf('%ef,', hl_k);
 hlow_k_str = hlow_k_str(1:end-1);
 hlow_k_len_str = sprintf('%d', length(hl_k));
-hlow_k_str = strcat('float hlow_k[', hlow_k_len_str, '] = {', hlow_k_str , '};');
+hlow_k_str = strcat('float filter_low_coeffs[FILTER_LOW_NTAPS] = {', hlow_k_str , '};');
+
+%-- lowpass signal
+xn_low_str = sprintf('%ef,', xn_low);
+xn_low_str = xn_low_str(1:end-1);
+xn_low_str = strcat('float test_low[FILTER_LOW_BLOCK_SIZE] = {', xn_low_str , '};');
+
+%-- bandpass filter coefficients
+hband_k_str = sprintf('%ef,', hb_k);
+hband_k_str = hband_k_str(1:end-1);
+hlband_k_len_str = sprintf('%d', length(hb_k));
+hband_k_str = strcat('float filter_band_coeffs[FILTER_BAND_NTAPS] = {', hband_k_str , '};');
+
+%-- bandpass signal
+xn_band_str = sprintf('%ef,', xn_band);
+xn_band_str = xn_band_str(1:end-1);
+xn_band_str = strcat('float test_band[FILTER_BAND_BLOCK_SIZE] = {', xn_band_str , '};');
+
+%-- highpass filter coefficients
+hhigh_k_str = sprintf('%ef,', hh_k);
+hhigh_k_str = hhigh_k_str(1:end-1);
+hhigh_k_len_str = sprintf('%d', length(hh_k));
+hhigh_k_str = strcat('float filter_high_coeffs[FILTER_HIGH_NTAPS] = {', hhigh_k_str , '};');
+
+%-- highpass signal
+xn_high_str = sprintf('%ef,', xn_high);
+xn_high_str = xn_high_str(1:end-1);
+xn_high_str = strcat('float test_high[FILTER_HIGH_BLOCK_SIZE] = {', xn_band_str , '};');
 
 %-- create text file
 fid = fopen('c_arrays.txt','wt');
 fprintf(fid, '%s\n\n', hdec_k_str);
 fprintf(fid, '%s\n\n', xn_str);
 fprintf(fid, '%s\n\n', xn_dec_str);
+fprintf(fid, '%s\n\n', hlow_k_str);
+fprintf(fid, '%s\n\n', xn_low_str);
+fprintf(fid, '%s\n\n', hband_k_str);
+fprintf(fid, '%s\n\n', xn_band_str);
 fclose(fid);

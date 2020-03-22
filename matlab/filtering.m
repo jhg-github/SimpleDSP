@@ -314,6 +314,17 @@ xn_band_str = sprintf('%ef,', xn_band);
 xn_band_str = xn_band_str(1:end-1);
 xn_band_str = strcat('float test_band[FILTER_BAND_BLOCK_SIZE] = {', xn_band_str , '};');
 
+%-- highpass filter coefficients
+hhigh_k_str = sprintf('%ef,', hh_k);
+hhigh_k_str = hhigh_k_str(1:end-1);
+hhigh_k_len_str = sprintf('%d', length(hh_k));
+hhigh_k_str = strcat('float filter_high_coeffs[FILTER_HIGH_NTAPS] = {', hhigh_k_str , '};');
+
+%-- highpass signal
+xn_high_str = sprintf('%ef,', xn_high);
+xn_high_str = xn_high_str(1:end-1);
+xn_high_str = strcat('float test_high[FILTER_HIGH_BLOCK_SIZE] = {', xn_high_str , '};');
+
 %-- create text file
 fid = fopen('c_arrays.txt','wt');
 fprintf(fid, '%s\n\n', hdec_k_str);
@@ -323,4 +334,6 @@ fprintf(fid, '%s\n\n', hlow_k_str);
 fprintf(fid, '%s\n\n', xn_low_str);
 fprintf(fid, '%s\n\n', hband_k_str);
 fprintf(fid, '%s\n\n', xn_band_str);
+fprintf(fid, '%s\n\n', hhigh_k_str);
+fprintf(fid, '%s\n\n', xn_high_str);
 fclose(fid);
