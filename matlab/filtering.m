@@ -7,24 +7,14 @@ Ts = 1/fs;          % Sampling period
 fnyq = fs / 2;      % Nyquist frequency
 L = 48000;           % Length of signal
 t = (0:L-1)*Ts;     % Time vector
-% atten_db = 60;      % Attenuation [db]. Aprox. 10 bits [ENOB], atten = 10 * 6.02 + 1.76 
-
-
-% hband_fstop1 = 600;
-% hband_fpass1 = 800;
-% hband_fpass2 = 1400;
-% hband_fstop2 = 6600;
-% hhigh_fstop = 1400;
-% hhigh_fpass = 1600;
-% nfir = 100;
 
 %-- signal --
-f1 = 200;           % Signal frequency components
-f2 = 400;           %
-f3 = 1000;          %
-f4 = 1200;          %
-f5 = 1800;          %
-f6 = 2000;          %
+f1 = 100;           % Signal frequency components
+f2 = 300;           %
+f3 = 900;           %
+f4 = 1100;          %
+f5 = 1700;          %
+f6 = 1900;          %
 xn = sin(2*pi*f1*t) + sin(2*pi*f2*t) + sin(2*pi*f3*t) + sin(2*pi*f4*t) + sin(2*pi*f5*t) + sin(2*pi*f6*t);   %Signal
 
 %-- signal fft --
@@ -68,9 +58,9 @@ P1_dec(2:end-1) = 2*P1_dec(2:end-1);    %
 P1_dec_db = 20*log10(P1_dec);           %
 
 %-- lowpass filter --
-hl_fpass = 500;                             % Lowpass filter cutoff=500Hz
+hl_fpass = 400;                             % Lowpass filter cutoff=500Hz
 n_hl = 50;                                  % Lowpass filter order
-hl_k = fir1(n_hl,(hl_fpass/fnyq_dec));      % Decimation filter coeficients
+hl_k = fir1(n_hl,(hl_fpass/fnyq_dec));      % Lowpass filter coeficients
 
 %-- lowpass filter fft --
 Hlm = fft( [hl_k zeros(1, L_dec - length(hl_k))] );     % Lowpass frequency response
@@ -90,6 +80,30 @@ P1_low = P2_low(1:L_dec/2+1);           %
 P1_low(2:end-1) = 2*P1_low(2:end-1);    %
 P1_low_db = 20*log10(P1_low);           %
 
+%-- bandpass filter --
+hb_fpass1 = 800;                            % Bandpass filter cutoff=800Hz
+hb_fpass2 = 1200;                           % Bandpass filter cutoff=1200Hz
+n_hb = 50;                                  % Bandpass filter order
+hb_k = fir1(n_hb,[(hb_fpass1/fnyq_dec) (hb_fpass2/fnyq_dec)]);      % Bandpass filter coeficients
+
+%-- bandpass filter fft --
+Hbm = fft( [hb_k zeros(1, L_dec - length(hb_k))] );     % Bandpass frequency response
+Hbm_P2 = abs(Hbm/1);                                    %
+Hbm_P1 = Hbm_P2(1:L_dec/2+1);                           %
+Hbm_P1(2:end-1) = Hbm_P1(2:end-1);                      %
+Hbm_P1_db = 20*log10(Hbm_P1);                           %
+
+%-- bandpass signal --
+xn_band = filter(hb_k,1,xn_dec);
+
+%-- bandpass signal fft --
+xn_band_win = xn_band'.*hanning(L_dec);   % Windowing
+Xm_band = fft(xn_band_win);               % Single sided FFT
+P2_band = abs(Xm_band/L_dec);             %
+P1_band = P2_band(1:L_dec/2+1);           %
+P1_band(2:end-1) = 2*P1_band(2:end-1);    %
+P1_band_db = 20*log10(P1_band);           %
+
 %-- plots --
 %figure
 subplot(5,4,1)
@@ -106,6 +120,8 @@ grid on
 title('Single-Sided Spectrum of Signal')
 xlabel('f (Hz)')
 ylabel('P1(f) dB')
+
+%-- decimate
 
 subplot(5,4,5)
 stem((0:n_hdec), hdec_k)
@@ -136,6 +152,8 @@ title('Single-Sided Spectrum of Decimated Signal')
 xlabel('f (Hz)')
 ylabel('P1_dec(f) dB')
 
+%-- lowpas
+
 subplot(5,4,9)
 stem((0:n_hl), hl_k)
 grid on
@@ -165,6 +183,37 @@ title('Single-Sided Spectrum of Lowpass Signal')
 xlabel('f (Hz)')
 ylabel('P1_low(f) dB')
 
+%-- bandpass
+
+subplot(5,4,13)
+stem((0:n_hb), hb_k)
+grid on
+title('Bandpass filter coefficients')
+xlabel('k')
+ylabel('hb_k(k)')
+
+subplot(5,4,14)
+plot(f_dec,Hbm_P1_db) 
+grid on
+title('Single-Sided Spectrum of Hb(m)')
+xlabel('f (Hz)')
+ylabel('Hb_P1(db)')
+
+subplot(5,4,15)
+plot(t_dec, xn_band)
+grid on
+title('Signal Bandpass')
+xlabel('t_dec(s)')
+ylabel('xn_band(n)')
+
+subplot(5,4,16)
+% plot(f_dec,P1_band) 
+plot(f_dec,P1_band_db) 
+grid on
+title('Single-Sided Spectrum of Bandpass Signal')
+xlabel('f (Hz)')
+ylabel('P1_band(f) dB')
+
 
 %-- prints --
 
@@ -183,6 +232,12 @@ hdec_k_str = strcat('float hdec_k[', hedc_k_len_str, '] = {', hdec_k_str , '};')
 xn_dec_str = sprintf('%ef,', xn_dec);
 xn_dec_str = xn_dec_str(1:end-1);
 xn_dec_str = strcat('float test_dst[FILTER_DEC_DEST_BLOCK_SIZE] = {', xn_dec_str , '};');
+
+%-- lowpass filter coefficients
+hlow_k_str = sprintf('%ef,', hl_k);
+hlow_k_str = hlow_k_str(1:end-1);
+hlow_k_len_str = sprintf('%d', length(hl_k));
+hlow_k_str = strcat('float hlow_k[', hlow_k_len_str, '] = {', hlow_k_str , '};');
 
 %-- create text file
 fid = fopen('c_arrays.txt','wt');
