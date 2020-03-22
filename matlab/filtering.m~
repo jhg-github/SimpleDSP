@@ -108,7 +108,7 @@ P1_band_db = 20*log10(P1_band);           %
 %-- highpass filter --
 hh_fpass = 1600;                            % Highpass filter cutoff=1600Hz
 n_hh = 50;                                  % Highpass filter order
-hh_k = fir1(n_hh,(hh_fpass/fnyq_dec),'high');      % Highpass filter coeficients
+hh_k = fir1(n_hh,(hh_fpass/fnyq_dec));      % Highpass filter coeficients
 
 %-- highpass filter fft --
 Hhm = fft( [hh_k zeros(1, L_dec - length(hh_k))] );     % Highpass frequency response
@@ -117,16 +117,16 @@ Hhm_P1 = Hhm_P2(1:L_dec/2+1);                           %
 Hhm_P1(2:end-1) = Hhm_P1(2:end-1);                      %
 Hhm_P1_db = 20*log10(Hhm_P1);                           %
 
-%-- highpass signal --
-xn_high = filter(hh_k,1,xn_dec);
+%-- lowpass signal --
+xn_low = filter(hl_k,1,xn_dec);
 
-%-- highpass signal fft --
-xn_high_win = xn_high'.*hanning(L_dec);   % Windowing
-Xm_high = fft(xn_high_win);               % Single sided FFT
-P2_high = abs(Xm_high/L_dec);             %
-P1_high = P2_high(1:L_dec/2+1);           %
-P1_high(2:end-1) = 2*P1_high(2:end-1);    %
-P1_high_db = 20*log10(P1_high);           %
+%-- lowpass signal fft --
+xn_low_win = xn_low'.*hanning(L_dec);   % Windowing
+Xm_low = fft(xn_low_win);               % Single sided FFT
+P2_low = abs(Xm_low/L_dec);             %
+P1_low = P2_low(1:L_dec/2+1);           %
+P1_low(2:end-1) = 2*P1_low(2:end-1);    %
+P1_low_db = 20*log10(P1_low);           %
 
 
 
@@ -265,7 +265,7 @@ title('Signal Highpass')
 xlabel('t_dec(s)')
 ylabel('xn_high(n)')
 
-subplot(5,4,20)
+subplot(5,4,12)
 % plot(f_dec,P1_low) 
 plot(f_dec,P1_high_db) 
 grid on
