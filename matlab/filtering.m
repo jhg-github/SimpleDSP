@@ -5,7 +5,7 @@ clear
 fs = 48000;         % Sampling frequency                    
 Ts = 1/fs;          % Sampling period
 fnyq = fs / 2;      % Nyquist frequency
-L = 48000;           % Length of signal
+L = 1024;           % Length of signal
 t = (0:L-1)*Ts;     % Time vector
 
 %-- signal --
@@ -285,7 +285,7 @@ xn_str = strcat('float src[FILTER_DEC_SRC_BLOCK_SIZE] = {', xn_str , '};');
 hdec_k_str = sprintf('%ef,', hdec_k);
 hdec_k_str = hdec_k_str(1:end-1);
 hedc_k_len_str = sprintf('%d', length(hdec_k));
-hdec_k_str = strcat('float hdec_k[', hedc_k_len_str, '] = {', hdec_k_str , '};');
+hdec_k_str = strcat('float filter_dec_coeffs[FILTER_DEC_NTAPS] = {', hdec_k_str , '};');
 
 %-- decimation signal
 xn_dec_str = sprintf('%ef,', xn_dec);
@@ -296,11 +296,31 @@ xn_dec_str = strcat('float test_dst[FILTER_DEC_DEST_BLOCK_SIZE] = {', xn_dec_str
 hlow_k_str = sprintf('%ef,', hl_k);
 hlow_k_str = hlow_k_str(1:end-1);
 hlow_k_len_str = sprintf('%d', length(hl_k));
-hlow_k_str = strcat('float hlow_k[', hlow_k_len_str, '] = {', hlow_k_str , '};');
+hlow_k_str = strcat('float filter_low_coeffs[FILTER_LOW_NTAPS] = {', hlow_k_str , '};');
+
+%-- lowpass signal
+xn_low_str = sprintf('%ef,', xn_low);
+xn_low_str = xn_low_str(1:end-1);
+xn_low_str = strcat('float test_low[FILTER_LOW_BLOCK_SIZE] = {', xn_low_str , '};');
+
+%-- bandpass filter coefficients
+hband_k_str = sprintf('%ef,', hb_k);
+hband_k_str = hband_k_str(1:end-1);
+hlband_k_len_str = sprintf('%d', length(hb_k));
+hband_k_str = strcat('float filter_band_coeffs[FILTER_BAND_NTAPS] = {', hband_k_str , '};');
+
+%-- bandpass signal
+xn_band_str = sprintf('%ef,', xn_band);
+xn_band_str = xn_band_str(1:end-1);
+xn_band_str = strcat('float test_band[FILTER_BAND_BLOCK_SIZE] = {', xn_band_str , '};');
 
 %-- create text file
 fid = fopen('c_arrays.txt','wt');
 fprintf(fid, '%s\n\n', hdec_k_str);
 fprintf(fid, '%s\n\n', xn_str);
 fprintf(fid, '%s\n\n', xn_dec_str);
+fprintf(fid, '%s\n\n', hlow_k_str);
+fprintf(fid, '%s\n\n', xn_low_str);
+fprintf(fid, '%s\n\n', hband_k_str);
+fprintf(fid, '%s\n\n', xn_band_str);
 fclose(fid);
