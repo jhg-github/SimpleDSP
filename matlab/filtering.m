@@ -5,7 +5,7 @@ clear
 fs = 48000;         % Sampling frequency                    
 Ts = 1/fs;          % Sampling period
 fnyq = fs / 2;      % Nyquist frequency
-L = 1024;           % Length of signal
+L = 48000;           % Length of signal
 t = (0:L-1)*Ts;     % Time vector
 
 %-- signal --
@@ -129,17 +129,41 @@ P1_high(2:end-1) = 2*P1_high(2:end-1);    %
 P1_high_db = 20*log10(P1_high);           %
 
 
+%-- interpolation filter --
+hint_k = decimation * hdec_k;
+
+%-- highpass filter fft --
+Hintm = fft( [hint_k zeros(1, L - length(hint_k))] );     % Highpass frequency response
+Hintm_P2 = abs(Hintm/1);                                    %
+Hintm_P1 = Hintm_P2(1:L/2+1);                           %
+Hintm_P1(2:end-1) = Hintm_P1(2:end-1);                      %
+Hintm_P1_db = 20*log10(Hintm_P1);                           %
+
+%-- interpolated signal --
+t_int = t;
+xn_int = upsample(xn_dec, decimation);
+xn_int = filter(hint_k,1,xn_int);
+
+%-- highpass signal fft --
+xn_int_win = xn_int'.*hanning(L);   % Windowing
+Xm_int = fft(xn_int_win);               % Single sided FFT
+P2_int = abs(Xm_int/L);             %
+P1_int = P2_int(1:L/2+1);           %
+P1_int(2:end-1) = 2*P1_int(2:end-1);    %
+P1_int_db = 20*log10(P1_int);           %
+
+
 
 %-- plots --
 %figure
-subplot(5,4,1)
+subplot(6,4,1)
 plot(t, xn)
 grid on
 title('Signal')
 xlabel('t (s)')
 ylabel('x(n)')
 
-subplot(5,4,2)
+subplot(6,4,2)
 plot(f,P1_db) 
 % plot(f,P1) 
 grid on
@@ -149,28 +173,28 @@ ylabel('P1(f) dB')
 
 %-- decimate
 
-subplot(5,4,5)
+subplot(6,4,5)
 stem((0:n_hdec), hdec_k)
 grid on
 title('Decimation filter coefficients')
 xlabel('k')
 ylabel('hdec(k)')
 
-subplot(5,4,6)
+subplot(6,4,6)
 plot(f,Hdecm_P1_db) 
 grid on
 title('Single-Sided Amplitude Spectrum of Hdec(m)')
 xlabel('f (Hz)')
 ylabel('Hdecm_P1(db)')
 
-subplot(5,4,7)
+subplot(6,4,7)
 plot(t_dec, xn_dec)
 grid on
 title('Signal decimated')
 xlabel('t_dec(s)')
 ylabel('xdec(n)')
 
-subplot(5,4,8)
+subplot(6,4,8)
 % plot(f_dec,P1_dec) 
 plot(f_dec,P1_dec_db) 
 grid on
@@ -180,28 +204,28 @@ ylabel('P1_dec(f) dB')
 
 %-- lowpas
 
-subplot(5,4,9)
+subplot(6,4,9)
 stem((0:n_hl), hl_k)
 grid on
 title('Lowpass filter coefficients')
 xlabel('k')
 ylabel('hl_k(k)')
 
-subplot(5,4,10)
+subplot(6,4,10)
 plot(f_dec,Hlm_P1_db) 
 grid on
 title('Single-Sided Spectrum of Hl(m)')
 xlabel('f (Hz)')
 ylabel('Hl_P1(db)')
 
-subplot(5,4,11)
+subplot(6,4,11)
 plot(t_dec, xn_low)
 grid on
 title('Signal Lowpass')
 xlabel('t_dec(s)')
 ylabel('xn_low(n)')
 
-subplot(5,4,12)
+subplot(6,4,12)
 % plot(f_dec,P1_low) 
 plot(f_dec,P1_low_db) 
 grid on
@@ -211,28 +235,28 @@ ylabel('P1_low(f) dB')
 
 %-- bandpass
 
-subplot(5,4,13)
+subplot(6,4,13)
 stem((0:n_hb), hb_k)
 grid on
 title('Bandpass filter coefficients')
 xlabel('k')
 ylabel('hb_k(k)')
 
-subplot(5,4,14)
+subplot(6,4,14)
 plot(f_dec,Hbm_P1_db) 
 grid on
 title('Single-Sided Spectrum of Hb(m)')
 xlabel('f (Hz)')
 ylabel('Hb_P1(db)')
 
-subplot(5,4,15)
+subplot(6,4,15)
 plot(t_dec, xn_band)
 grid on
 title('Signal Bandpass')
 xlabel('t_dec(s)')
 ylabel('xn_band(n)')
 
-subplot(5,4,16)
+subplot(6,4,16)
 % plot(f_dec,P1_band) 
 plot(f_dec,P1_band_db) 
 grid on
@@ -242,36 +266,68 @@ ylabel('P1_band(f) dB')
 
 
 
-%-- highpas
+%-- highpass
 
-subplot(5,4,17)
+subplot(6,4,17)
 stem((0:n_hh), hh_k)
 grid on
 title('Highpass filter coefficients')
 xlabel('k')
 ylabel('hh_k(k)')
 
-subplot(5,4,18)
+subplot(6,4,18)
 plot(f_dec,Hhm_P1_db) 
 grid on
 title('Single-Sided Spectrum of Hh(m)')
 xlabel('f (Hz)')
 ylabel('Hh_P1(db)')
 
-subplot(5,4,19)
+subplot(6,4,19)
 plot(t_dec, xn_high)
 grid on
 title('Signal Highpass')
 xlabel('t_dec(s)')
 ylabel('xn_high(n)')
 
-subplot(5,4,20)
+subplot(6,4,20)
 % plot(f_dec,P1_low) 
 plot(f_dec,P1_high_db) 
 grid on
 title('Single-Sided Spectrum of Highpass Signal')
 xlabel('f (Hz)')
 ylabel('P1_high(f) dB')
+
+
+%-- interpolation
+
+subplot(6,4,21)
+stem((0:length(hint_k)-1), hint_k)
+grid on
+title('Interpolation filter coefficients')
+xlabel('k')
+ylabel('hint_k(k)')
+
+subplot(6,4,22)
+plot(f,Hintm_P1_db) 
+grid on
+title('Single-Sided Spectrum of Hint(m)')
+xlabel('f (Hz)')
+ylabel('Hint_P1(db)')
+
+subplot(6,4,23)
+plot(t_int, xn_int)
+grid on
+title('Interpolated Signal')
+xlabel('t_int(s)')
+ylabel('xn_int(n)')
+
+subplot(6,4,24)
+% plot(f_dec,P1_low) 
+plot(f,P1_int_db) 
+grid on
+title('Single-Sided Spectrum of Interpolated Signal')
+xlabel('f (Hz)')
+ylabel('P1_int(f) dB')
 
 
 %-- prints --
