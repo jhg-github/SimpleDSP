@@ -5,7 +5,7 @@ clear
 fs = 48000;         % Sampling frequency                    
 Ts = 1/fs;          % Sampling period
 fnyq = fs / 2;      % Nyquist frequency
-L = 48000;           % Length of signal
+L = 1024;           % Length of signal
 t = (0:L-1)*Ts;     % Time vector
 
 %-- signal --
@@ -130,7 +130,10 @@ P1_high_db = 20*log10(P1_high);           %
 
 
 %-- interpolation filter --
-hint_k = decimation * hdec_k;
+%hint_k = decimation * hdec_k;
+n_int = 55;                        % Interpolation filter order. Multiple of 8 in order to use polyphase filter on cmsis-dsp
+hint_k = fir1(n_int,(B/fnyq));     % Interpolation filter coeficients
+hint_k = decimation * hint_k;       % To compensate for amplitude after upsampling
 
 %-- highpass filter fft --
 Hintm = fft( [hint_k zeros(1, L - length(hint_k))] );     % Highpass frequency response
@@ -144,7 +147,7 @@ t_int = t;
 xn_int = upsample(xn_dec, decimation);
 xn_int = filter(hint_k,1,xn_int);
 
-%-- highpass signal fft --
+%-- interpolated signal fft --
 xn_int_win = xn_int'.*hanning(L);   % Windowing
 Xm_int = fft(xn_int_win);               % Single sided FFT
 P2_int = abs(Xm_int/L);             %
@@ -340,7 +343,6 @@ xn_str = strcat('float src[FILTER_DEC_SRC_BLOCK_SIZE] = {', xn_str , '};');
 %-- decimation filter coefficients
 hdec_k_str = sprintf('%ef,', hdec_k);
 hdec_k_str = hdec_k_str(1:end-1);
-hedc_k_len_str = sprintf('%d', length(hdec_k));
 hdec_k_str = strcat('float filter_dec_coeffs[FILTER_DEC_NTAPS] = {', hdec_k_str , '};');
 
 %-- decimation signal
@@ -381,6 +383,16 @@ xn_high_str = sprintf('%ef,', xn_high);
 xn_high_str = xn_high_str(1:end-1);
 xn_high_str = strcat('float test_high[FILTER_HIGH_BLOCK_SIZE] = {', xn_high_str , '};');
 
+%-- interpolation filter coefficients
+hint_k_str = sprintf('%ef,', hint_k);
+hint_k_str = hint_k_str(1:end-1);
+hint_k_str = strcat('const float filter_int_coeffs[FILTER_INT_NTAPS] = {', hint_k_str , '};');
+
+%-- decimation signal
+xn_int_str = sprintf('%ef,', xn_int);
+xn_int_str = xn_int_str(1:end-1);
+xn_int_str = strcat('float test_dst[] = {', xn_int_str , '};');
+
 %-- create text file
 fid = fopen('c_arrays.txt','wt');
 fprintf(fid, '%s\n\n', hdec_k_str);
@@ -392,4 +404,6 @@ fprintf(fid, '%s\n\n', hband_k_str);
 fprintf(fid, '%s\n\n', xn_band_str);
 fprintf(fid, '%s\n\n', hhigh_k_str);
 fprintf(fid, '%s\n\n', xn_high_str);
+fprintf(fid, '%s\n\n', hint_k_str);
+fprintf(fid, '%s\n\n', xn_int_str);
 fclose(fid);
