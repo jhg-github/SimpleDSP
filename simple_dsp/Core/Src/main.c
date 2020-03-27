@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 
 #include "arm_math.h"
+#include "../../Modules/DSP/dsp.h"
 
 /* USER CODE END Includes */
 
@@ -300,14 +301,17 @@ int main(void)
   //TestDecimatorLowPass();
   //TestDecimatorBandpass();
 //  TestDecimatorHighpass();
-  TestDecimatorInterpolator();
+  //TestDecimatorInterpolator();
+
+  dsp_Init();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+    dsp_Process();
     //LL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 
     /* USER CODE END WHILE */

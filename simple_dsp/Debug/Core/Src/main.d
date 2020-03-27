@@ -38,7 +38,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_pwr.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_ll_dma.h \
  ../CMSIS/DSP/Include/arm_math.h \
- ../Drivers/CMSIS/Include/cmsis_compiler.h
+ ../Drivers/CMSIS/Include/cmsis_compiler.h \
+ ../Core/Src/../../Modules/DSP/dsp.h
 
 ../Core/Inc/main.h:
 
@@ -121,3 +122,5 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../CMSIS/DSP/Include/arm_math.h:
 
 ../Drivers/CMSIS/Include/cmsis_compiler.h:
+
+../Core/Src/../../Modules/DSP/dsp.h:

@@ -1,0 +1,2 @@
+dsp.c:14:6:dsp_Init	0	static
+dsp.c:18:6:dsp_Process	0	static
