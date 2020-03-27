@@ -5,7 +5,7 @@ clear
 fs = 48000;         % Sampling frequency                    
 Ts = 1/fs;          % Sampling period
 fnyq = fs / 2;      % Nyquist frequency
-L = 48000;           % Length of signal
+L = 1024;           % Length of signal
 t = (0:L-1)*Ts;     % Time vector
 
 %-- signal --
@@ -15,7 +15,7 @@ f3 = 900;           %
 f4 = 1100;          %
 f5 = 1700;          %
 f6 = 1900;          %
-xn = 2 + sin(2*pi*f1*t) + sin(2*pi*f2*t) + sin(2*pi*f3*t) + sin(2*pi*f4*t) + sin(2*pi*f5*t) + sin(2*pi*f6*t);   %Signal
+xn = sin(2*pi*f1*t) + sin(2*pi*f2*t) + sin(2*pi*f3*t) + sin(2*pi*f4*t) + sin(2*pi*f5*t) + sin(2*pi*f6*t);   %Signal
 
 %-- signal fft --
 f = fs*(0:(L/2))/L;             % Freq. vector
@@ -44,11 +44,8 @@ Hdecm_P1_db = 20*log10(Hdecm_P1);       %
 
 %-- decimate signal --
 xn_dec = filter(hdec_k,1,xn);               % Filter signal
-xn_dec = downsample(xn_dec, decimation);    % Downsample signal
+xn_dec = downsample(xn_dec, decimation);    % Downlsample signal
 t_dec = downsample(t, decimation);          % Decimate time vector
-
-%-- dc removal
-%xn_dec = filter([1 -1], [1 -0.99], xn_dec);  % Remove dc component
 
 %-- decimate signal fft --
 L_dec = length(xn_dec);                 % Lenght of decimated signal
@@ -64,7 +61,7 @@ P1_dec_db = 20*log10(P1_dec);           %
 hl_fpass = 400;                             % Lowpass filter cutoff=500Hz
 n_hl = 50;                                  % Lowpass filter order
 %hl_k = fir1(n_hl,(hl_fpass/fnyq_dec));      % Lowpass filter coeficients
-hl_k = fir1(n_hl,[(20/fnyq_dec) (hl_fpass/fnyq_dec)]);      % Lowpass filter coeficients
+hl_k = fir1(n_hl,[(50/fnyq_dec) (hl_fpass/fnyq_dec)]);      % Lowpass filter coeficients
 
 %-- lowpass filter fft --
 Hlm = fft( [hl_k zeros(1, L_dec - length(hl_k))] );     % Lowpass frequency response
