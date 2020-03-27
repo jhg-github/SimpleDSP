@@ -9,8 +9,11 @@
 #define MODULES_DSP_DSP_H_
 
 
+/* Includes */
+#include "main.h"
 
-/* Exported functions prototypes ---------------------------------------------*/
+
+/* Public functions */
 
 void dsp_Init( void );
 void dsp_Process( void );

@@ -1,8 +1,0 @@
-main.c:67:6:TestDecimator	11008	static
-main.c:99:6:TestDecimatorLowPass	10592	static
-main.c:140:6:TestDecimatorBandpass	10592	static
-main.c:180:6:TestDecimatorHighpass	10592	static
-main.c:221:6:TestDecimatorInterpolator	14024	static
-main.c:328:6:SystemClock_Config	168	static
-main.c:271:5:main	64	static,ignoring_inline_asm
-main.c:495:6:Error_Handler	0	static

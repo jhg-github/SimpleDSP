@@ -12,6 +12,7 @@
 /* Public functions */
 
 void dsp_Init( void ){
+  uint32_t v = 90+3;
 }
 
 
