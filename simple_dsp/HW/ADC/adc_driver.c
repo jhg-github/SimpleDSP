@@ -38,6 +38,9 @@ void adc_Init(uint16_t *const adcBuffer, const uint16_t bufferSize) {
  * @return true if buffer is full and ready to be processed
  */
 bool adc_IsBufferFull(const adc_buffer_number_t bufferNumber) {
+#warning ONLY FOR TEST !!!
+  return true;
+#warning ONLY FOR TEST !!!
   // TODO add assert here
   return adc_driver_mod.isBufferFull[bufferNumber];
 }

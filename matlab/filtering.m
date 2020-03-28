@@ -5,7 +5,7 @@ clear
 fs = 48000;         % Sampling frequency                    
 Ts = 1/fs;          % Sampling period
 fnyq = fs / 2;      % Nyquist frequency
-L = 48000;           % Length of signal
+L = 1024;           % Length of signal
 t = (0:L-1)*Ts;     % Time vector
 
 %-- signal --
@@ -15,7 +15,7 @@ f3 = 900;           %
 f4 = 1100;          %
 f5 = 1700;          %
 f6 = 1900;          %
-xn = 2 + sin(2*pi*f1*t) + sin(2*pi*f2*t) + sin(2*pi*f3*t) + sin(2*pi*f4*t) + sin(2*pi*f5*t) + sin(2*pi*f6*t);   %Signal
+xn = sin(2*pi*f1*t) + sin(2*pi*f2*t) + sin(2*pi*f3*t) + sin(2*pi*f4*t) + sin(2*pi*f5*t) + sin(2*pi*f6*t);   %Signal
 
 %-- signal fft --
 f = fs*(0:(L/2))/L;             % Freq. vector
