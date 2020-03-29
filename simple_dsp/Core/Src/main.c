@@ -262,6 +262,15 @@ void TestDecimatorInterpolator (void){
 
 }
 
+
+/**
+ * Initializes all drivers and modules
+ */
+void main_Init(void){
+  stalloc_Init();
+  dsp_Init();
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -303,7 +312,7 @@ int main(void)
 //  TestDecimatorHighpass();
   //TestDecimatorInterpolator();
 
-  dsp_Init();
+  main_Init();
 
   /* USER CODE END 2 */
 

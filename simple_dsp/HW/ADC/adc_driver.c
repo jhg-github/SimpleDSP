@@ -6,7 +6,6 @@
  */
 
 /* Includes */
-#include "main.h"
 #include "adc_driver.h"
 
 /* Private variables */
