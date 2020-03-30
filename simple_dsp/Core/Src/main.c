@@ -269,6 +269,8 @@ void TestDecimatorInterpolator (void){
 void main_Init(void){
   stalloc_Init();
   dsp_Init();
+
+  stalloc_Disable();
 }
 
 /* USER CODE END 0 */

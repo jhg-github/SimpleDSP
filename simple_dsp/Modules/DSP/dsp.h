@@ -8,8 +8,10 @@
 #ifndef MODULES_DSP_DSP_H_
 #define MODULES_DSP_DSP_H_
 
+
 /* Includes */
 #include "main.h"
+
 
 /* Public enums */
 typedef enum {
@@ -17,6 +19,7 @@ typedef enum {
   // keep last
   DSP_MODE_SIZE,
 } dsp_mode_t;
+
 
 /* Public functions */
 
@@ -29,5 +32,6 @@ void dsp_Init(void);
  * Dsp module process
  */
 void dsp_Process(void);
+
 
 #endif /* MODULES_DSP_DSP_H_ */
