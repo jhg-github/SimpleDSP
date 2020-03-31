@@ -61,10 +61,9 @@ P1_dec(2:end-1) = 2*P1_dec(2:end-1);    %
 P1_dec_db = 20*log10(P1_dec);           %
 
 %-- lowpass filter --
-hl_fpass = 400;                             % Lowpass filter cutoff=500Hz
+hl_fpass = 400;                             % Lowpass filter cutoff=400Hz
 n_hl = 50;                                  % Lowpass filter order
-%hl_k = fir1(n_hl,(hl_fpass/fnyq_dec));      % Lowpass filter coeficients
-hl_k = fir1(n_hl,[(20/fnyq_dec) (hl_fpass/fnyq_dec)]);      % Lowpass filter coeficients
+hl_k = fir1(n_hl,(hl_fpass/fnyq_dec));      % Lowpass filter coeficients
 
 %-- lowpass filter fft --
 Hlm = fft( [hl_k zeros(1, L_dec - length(hl_k))] );     % Lowpass frequency response
