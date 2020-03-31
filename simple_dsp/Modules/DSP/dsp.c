@@ -33,7 +33,7 @@ static struct dsp_mod_tag {                     // dsp module structure
   float signal_fs[DSP_BLOCK_FS_N_SAMPLES];      // signal at sampling frequency. used before decimating and after interpolating */
   float signal_dec[DSP_BLOCK_DEC_N_SAMPLES];    // signal at decimated frequency
   float signal_filt[DSP_BLOCK_DEC_N_SAMPLES];   // signal filtered at decimated frequency
-  uint16_t dacBuffer[DSP_ADC_BUFFER_N_SAMPLES]; // dac data is written to this buffer
+  uint16_t dacBuffer[DSP_DAC_BUFFER_N_SAMPLES]; // dac data is written to this buffer
   // control
   adc_buffer_number_t nextBufferToProcess;      // number of next buffer to process
   dsp_mode_t mode;                              // type of filter to apply
@@ -87,8 +87,8 @@ void dsp_Init(void) {
  * Dsp module process
  */
 void dsp_Process(void) {
-  LL_GPIO_SetOutputPin(LD2_GPIO_Port, LD2_Pin); // visual feedabck
-  if (adc_IsBufferFull(dsp_mod.nextBufferToProcess)) { // adc has filled up the buffer and is ready to be processed
+  LL_GPIO_SetOutputPin(LD2_GPIO_Port, LD2_Pin);         // for debugging purposes
+  if (adc_IsBufferFull(dsp_mod.nextBufferToProcess)) {  // adc has filled up the buffer and is ready to be processed
     if (dsp_mod.mode == DSP_MODE_BYPASS) {
       dsp_BypassSignal();
     } else {
@@ -122,7 +122,7 @@ void dsp_Process(void) {
       dsp_mod.nextBufferToProcess = ADC_BUFFER_NUMBER_0;
     }
   }
-  LL_GPIO_ResetOutputPin(LD2_GPIO_Port, LD2_Pin); // visual feedback
+  LL_GPIO_ResetOutputPin(LD2_GPIO_Port, LD2_Pin); // for debugging purposes
 }
 
 /* Private functions */
