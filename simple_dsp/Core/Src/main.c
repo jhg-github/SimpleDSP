@@ -26,6 +26,7 @@
 
 #include "arm_math.h"
 #include "../../Modules/DSP/dsp.h"
+#include "../../Modules/Memory/static_allocator.h"
 
 /* USER CODE END Includes */
 
@@ -323,7 +324,7 @@ int main(void)
   while (1)
   {
     dsp_Process();
-    //LL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+    HAL_Delay(10);
 
     /* USER CODE END WHILE */
 

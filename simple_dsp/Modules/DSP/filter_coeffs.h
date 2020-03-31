@@ -12,11 +12,13 @@
 /* Public defines */
 
 #define FILTER_COEFFS_DEC_NTAPS (51)
+#define FILTER_COEFFS_INT_NTAPS (56)
 
 
 /* Public variables */
 
-extern const float filter_coeffs_dec[FILTER_COEFFS_DEC_NTAPS];
+extern const float filter_coeffs_dec[FILTER_COEFFS_DEC_NTAPS];  // decimation filter
+extern const float filter_coeffs_int[FILTER_COEFFS_INT_NTAPS];  // interpolation filter
 
 
 #endif /* DSP_FILTER_COEFFS_H_ */

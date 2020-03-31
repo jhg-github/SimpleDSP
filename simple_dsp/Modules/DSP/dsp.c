@@ -10,6 +10,7 @@
 #include "dsp.h"
 #include "filter_coeffs.h"
 #include "filter_decimation.h"
+#include "filter_interpolation.h"
 #include "filter_tests.h"
 #include "../../HW/ADC/adc_driver.h"
 #include "arm_math.h"
@@ -17,8 +18,10 @@
 
 /* Private defines */
 #define DSP_DECIMATION_FACTOR     (8)                         // decimation factor
+#define DSP_INTERPOLATION_FACTOR  (DSP_DECIMATION_FACTOR)     // interpolation factor
 #define DSP_BLOCK_FS_N_SAMPLES    (1024)                      // number of samples per block of processing at sampling frequency
 #define DSP_BLOCK_DEC_N_SAMPLES   (DSP_BLOCK_FS_N_SAMPLES/DSP_DECIMATION_FACTOR)  // number of samples per block of processing at decimated frequency
+#define DSP_BLOCK_INT_N_SAMPLES   (DSP_BLOCK_DEC_N_SAMPLES)   // number of samples per block of processing at decimated frequency
 #define DSP_ADC_BUFFER_N_SAMPLES  (2*DSP_BLOCK_FS_N_SAMPLES)  // 2 times DSP_BLOCK_N_SAMPLES in order to process one block while the other is being written by the adc
 #define DSP_DAC_BUFFER_N_SAMPLES  (2*DSP_BLOCK_FS_N_SAMPLES)  // 2 times DSP_BLOCK_N_SAMPLES in order to write one block while the other is being used by the dac
 
@@ -36,6 +39,7 @@ static struct dsp_mod_tag {                     // dsp module structure
   dsp_mode_t mode;                              // type of filter to apply
   // filters
   filter_dec_t *pfilter_dec;                    // points to decimation filter instance
+  filter_int_t *pfilter_int;                    // points to interpolation filter instance
 } dsp_mod;
 
 
@@ -125,6 +129,7 @@ void dsp_Process(void) {
  */
 static void dsp_InitFilters(void) {
   dsp_mod.pfilter_dec = (filter_dec_t *)filter_dec_Ctor(FILTER_COEFFS_DEC_NTAPS, filter_coeffs_dec, DSP_BLOCK_FS_N_SAMPLES, DSP_DECIMATION_FACTOR);
+  dsp_mod.pfilter_int = (filter_int_t *)filter_int_Ctor(FILTER_COEFFS_INT_NTAPS, filter_coeffs_int, DSP_BLOCK_INT_N_SAMPLES, DSP_INTERPOLATION_FACTOR);
 }
 
 
@@ -138,7 +143,7 @@ static void dsp_ConvertSignalToFloat(void) {
 }
 
 /**
- * Decimates the signal from a sampling frequency of 48KHz to 6KHz
+ * Decimates the signal from a sampling frequency of 48KHz to 6KHz with cutoff freq 2.2KHz
  */
 static void dsp_DecimateSignal(void) {
   filter_dec_Decimate(dsp_mod.pfilter_dec, dsp_mod.signal_fs, dsp_mod.signal_dec);
@@ -150,7 +155,13 @@ static void dsp_BandPassSignal(void) {
 }
 static void dsp_HighPassSignal(void) {
 }
+
+/**
+ * Interpolates the signal from a sampling frequency of 6KHz to 48KHz with cutoff freq 2.2KHz
+ */
 static void dsp_InterpolateSignal(void) {
+  filter_int_Interpolate(dsp_mod.pfilter_int, dsp_mod.signal_dec, dsp_mod.signal_fs);
 }
+
 static void dsp_ConvertSignalToUint16(void) {
 }
