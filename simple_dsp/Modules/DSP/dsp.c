@@ -40,6 +40,7 @@ static struct dsp_mod_tag {                     // dsp module structure
   // filters
   filter_dec_t *pfilter_dec;                    // points to decimation filter instance
   filter_fir_t *pfilter_lowpass;                // points to lowpass fir filter instance
+  filter_fir_t *pfilter_bandpass;               // points to bandpass fir filter instance
   filter_int_t *pfilter_int;                    // points to interpolation filter instance
 } dsp_mod;
 
@@ -70,7 +71,7 @@ void dsp_Init(void) {
   dsp_mod.nextBufferToProcess = ADC_BUFFER_NUMBER_0;
   dsp_mod.mode = DSP_MODE_BYPASS;
 #warning ONLY FOR TEST !!!
-  dsp_mod.mode = DSP_MODE_LOWPASS;
+  dsp_mod.mode = DSP_MODE_BANDPASS;
 #warning ONLY FOR TEST !!!
 
 #warning ONLY FOR TEST !!!
@@ -131,6 +132,7 @@ void dsp_Process(void) {
 static void dsp_InitFilters(void) {
   dsp_mod.pfilter_dec = (filter_dec_t *)filter_dec_Ctor(FILTER_COEFFS_DEC_NTAPS, filter_coeffs_dec, DSP_BLOCK_FS_N_SAMPLES, DSP_DECIMATION_FACTOR);
   dsp_mod.pfilter_lowpass = (filter_fir_t *)filter_fir_Ctor(FILTER_COEFFS_LOW_NTAPS, filter_coeffs_low, DSP_BLOCK_DEC_N_SAMPLES);
+  dsp_mod.pfilter_bandpass = (filter_fir_t *)filter_fir_Ctor(FILTER_COEFFS_BAND_NTAPS, filter_coeffs_band, DSP_BLOCK_DEC_N_SAMPLES);
   dsp_mod.pfilter_int = (filter_int_t *)filter_int_Ctor(FILTER_COEFFS_INT_NTAPS, filter_coeffs_int, DSP_BLOCK_DEC_N_SAMPLES, DSP_INTERPOLATION_FACTOR);
 }
 
@@ -158,8 +160,13 @@ static void dsp_LowPassSignal(void) {
   filter_fir_Filter(dsp_mod.pfilter_lowpass, dsp_mod.signal_dec, dsp_mod.signal_filt);
 }
 
+/**
+ * Bandpass filters the signal cutoff frequencies of 800Hz and 1200Hz
+ */
 static void dsp_BandPassSignal(void) {
+  filter_fir_Filter(dsp_mod.pfilter_bandpass, dsp_mod.signal_dec, dsp_mod.signal_filt);
 }
+
 static void dsp_HighPassSignal(void) {
 }
 

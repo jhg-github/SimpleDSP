@@ -11,16 +11,18 @@
 
 /* Public defines */
 
-#define FILTER_COEFFS_DEC_NTAPS (51)
-#define FILTER_COEFFS_LOW_NTAPS (51)
-#define FILTER_COEFFS_INT_NTAPS (56)
+#define FILTER_COEFFS_DEC_NTAPS   (51)
+#define FILTER_COEFFS_LOW_NTAPS   (51)
+#define FILTER_COEFFS_BAND_NTAPS  (51)
+#define FILTER_COEFFS_INT_NTAPS   (56)
 
 
 /* Public variables */
 
-extern const float filter_coeffs_dec[FILTER_COEFFS_DEC_NTAPS];  // decimation filter
-extern const float filter_coeffs_low[FILTER_COEFFS_LOW_NTAPS];
-extern const float filter_coeffs_int[FILTER_COEFFS_INT_NTAPS];  // interpolation filter
+extern const float filter_coeffs_dec[FILTER_COEFFS_DEC_NTAPS];    // decimation filter
+extern const float filter_coeffs_low[FILTER_COEFFS_LOW_NTAPS];    // lowpass filter
+extern const float filter_coeffs_band[FILTER_COEFFS_BAND_NTAPS];  // bandpass filter
+extern const float filter_coeffs_int[FILTER_COEFFS_INT_NTAPS];    // interpolation filter
 
 
 #endif /* DSP_FILTER_COEFFS_H_ */
