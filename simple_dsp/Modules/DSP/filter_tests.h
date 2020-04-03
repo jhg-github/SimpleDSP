@@ -22,7 +22,7 @@
 
 extern const float filter_tests_signal[FILTER_TESTS_SIGNAL_SIZE_N];
 
-extern const uint16_t filter_tests_sine_table[FILTER_TESTS_SINE_TABLE_SIZE_N];
+extern const uint16_t filter_tests_sine_table[];
 
 
 #endif /* DSP_FILTER_TESTS_H_ */

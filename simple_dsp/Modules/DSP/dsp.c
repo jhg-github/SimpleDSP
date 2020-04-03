@@ -68,7 +68,8 @@ static void dsp_ConvertSignalToUint16(void);
 void dsp_Init(void) {
   // init drivers
   adc_Init(&dsp_mod.adcBuffer[0], DSP_ADC_BUFFER_N_SAMPLES);
-  dac_Init();
+  //dac_Init((uint32_t)&dsp_mod.dacBuffer[0], DSP_DAC_BUFFER_N_SAMPLES);
+  dac_Init((uint32_t)&filter_tests_sine_table, DSP_DAC_BUFFER_N_SAMPLES);
   // init filters
   dsp_InitFilters();
   // init module variables

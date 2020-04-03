@@ -2,12 +2,12 @@ import numpy
 import math
 import matplotlib.pyplot as plt
 
-L = 256
+L = 2048
 x_n = numpy.arange(0,2*math.pi,2*math.pi/L)
 sine_table=[]
 c=0
 for x in x_n:
-    sine_n = int(math.sin(x)*1448 + 2047)
+    sine_n = int(math.sin(10*x)*512 + 2047)
     print(sine_n, end=', ')
     sine_table.append(sine_n)
     c +=1
