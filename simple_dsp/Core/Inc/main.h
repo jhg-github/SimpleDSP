@@ -29,6 +29,9 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f3xx_hal.h"
+#include "stm32f3xx_ll_dac.h"
+#include "stm32f3xx_ll_dma.h"
+#include "stm32f3xx_ll_tim.h"
 #include "stm32f3xx.h"
 #include "stm32f3xx_ll_system.h"
 #include "stm32f3xx_ll_gpio.h"
@@ -38,7 +41,6 @@ extern "C" {
 #include "stm32f3xx_ll_rcc.h"
 #include "stm32f3xx_ll_utils.h"
 #include "stm32f3xx_ll_pwr.h"
-#include "stm32f3xx_ll_dma.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -72,10 +74,14 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define B1_Pin LL_GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
+#define ADC_IN_Pin LL_GPIO_PIN_0
+#define ADC_IN_GPIO_Port GPIOA
 #define USART_TX_Pin LL_GPIO_PIN_2
 #define USART_TX_GPIO_Port GPIOA
 #define USART_RX_Pin LL_GPIO_PIN_3
 #define USART_RX_GPIO_Port GPIOA
+#define DAC_OUT_Pin LL_GPIO_PIN_4
+#define DAC_OUT_GPIO_Port GPIOA
 #define LD2_Pin LL_GPIO_PIN_5
 #define LD2_GPIO_Port GPIOA
 #define TMS_Pin LL_GPIO_PIN_13
