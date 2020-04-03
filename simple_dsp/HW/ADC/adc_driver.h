@@ -8,15 +8,19 @@
 #ifndef HW_ADC_ADC_DRIVER_H_
 #define HW_ADC_ADC_DRIVER_H_
 
+
 /* Includes */
 #include "main.h"
 
+
 /* Public enums */
 typedef enum {
-  ADC_BUFFER_NUMBER_0, ADC_BUFFER_NUMBER_1,
+  ADC_BUFFER_NUMBER_0,
+  ADC_BUFFER_NUMBER_1,
   // keep last
   ADC_BUFFER_NUMBER_SIZE,
 } adc_buffer_number_t;
+
 
 /* Public functions */
 

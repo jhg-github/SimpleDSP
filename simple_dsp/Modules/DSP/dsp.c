@@ -14,6 +14,8 @@
 #include "filter_interpolation.h"
 #include "filter_tests.h"
 #include "../../HW/ADC/adc_driver.h"
+#include "../../HW/DAC/dac_driver.h"
+#include "../../HW/Sampling_Timer/sampling_timer.h"
 #include "arm_math.h"
 
 
@@ -66,6 +68,7 @@ static void dsp_ConvertSignalToUint16(void);
 void dsp_Init(void) {
   // init drivers
   adc_Init(&dsp_mod.adcBuffer[0], DSP_ADC_BUFFER_N_SAMPLES);
+  dac_Init();
   // init filters
   dsp_InitFilters();
   // init module variables
@@ -81,6 +84,8 @@ void dsp_Init(void) {
     dsp_mod.signal_fs[i] = filter_tests_signal[i];
   }
 #warning ONLY FOR TEST !!!
+  // start all by enabling sampling timer
+  sampling_timer_Start();
 }
 
 /**

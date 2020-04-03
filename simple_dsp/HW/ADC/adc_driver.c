@@ -8,6 +8,7 @@
 /* Includes */
 #include "adc_driver.h"
 
+
 /* Private variables */
 
 static struct adc_driver_tag { // adc driver structure
@@ -15,6 +16,7 @@ static struct adc_driver_tag { // adc driver structure
   uint16_t bufferSize; // number of samples in buffer
   bool isBufferFull[ADC_BUFFER_NUMBER_SIZE]; // flag to mark that a buffer is full and ready to be processed
 } adc_driver_mod; //TODO check if this should be volatile
+
 
 /* Public functions */
 
