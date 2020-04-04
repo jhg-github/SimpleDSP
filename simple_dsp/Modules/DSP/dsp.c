@@ -68,10 +68,7 @@ static void dsp_ConvertSignalToUint16(void);
 void dsp_Init(void) {
   // init drivers
   adc_Init(&dsp_mod.adcBuffer[0], DSP_ADC_BUFFER_N_SAMPLES);
-#warning ONLY FOR TEST !!!
-  //dac_Init((uint32_t)&dsp_mod.dacBuffer[0], DSP_DAC_BUFFER_N_SAMPLES);
-  dac_Init((uint32_t)&filter_tests_sine_table, DSP_DAC_BUFFER_N_SAMPLES);
-#warning ONLY FOR TEST !!!
+  dac_Init(&dsp_mod.dacBuffer[0], DSP_DAC_BUFFER_N_SAMPLES);
   // init filters
   dsp_InitFilters();
   // init module variables
@@ -83,6 +80,12 @@ void dsp_Init(void) {
   int i;
   for (i = 0; i < (sizeof(filter_tests_signal) / sizeof(filter_tests_signal[0])); i++) {
     dsp_mod.signal_fs[i] = filter_tests_signal[i];
+  }
+  for (i = 0; i < (DSP_DAC_BUFFER_N_SAMPLES/2); i++) {
+    dsp_mod.dacBuffer[i] = 1535 + i;
+  }
+  for (i = 0; i < (DSP_DAC_BUFFER_N_SAMPLES/2); i++) {
+    dsp_mod.dacBuffer[(DSP_DAC_BUFFER_N_SAMPLES/2)+i] = 2559 - i;
   }
 #warning ONLY FOR TEST !!!
   // start all by enabling sampling timer
@@ -98,8 +101,9 @@ void dsp_Init(void) {
  * - Complex. Event manager/handler were the servers will publish events and the clients will subscribe to them. when an event is published event manger will transmit it to all subscribed clients
  */
 void dsp_Process(void) {
-  LL_GPIO_SetOutputPin(LD2_GPIO_Port, LD2_Pin);           // for debugging purposes
-  if (adc_IsHalfBufferFree(dsp_mod.activeHalfBuffer)) {   // has adc filled up the half buffer and is ready to be processed ?
+  if (adc_IsHalfBufferFree(dsp_mod.activeHalfBuffer)
+      && dac_IsHalfBufferFree(dsp_mod.activeHalfBuffer)) {  // check adc and dac half buffers are ready to be processed
+    LL_GPIO_SetOutputPin(LD2_GPIO_Port, LD2_Pin);             // for debugging purposes
     if (dsp_mod.mode == DSP_MODE_BYPASS) {
       //TODO check dac buffer ready else fail, what then?
       dsp_BypassSignal();
@@ -133,8 +137,8 @@ void dsp_Process(void) {
     } else {
       dsp_mod.activeHalfBuffer = BUFFER_HALF_FIRST;
     }
-  }
   LL_GPIO_ResetOutputPin(LD2_GPIO_Port, LD2_Pin); // for debugging purposes
+  }
 }
 
 /* Private functions */

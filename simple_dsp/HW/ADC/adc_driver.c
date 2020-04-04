@@ -14,8 +14,8 @@
 static struct adc_driver_mod_tag { // adc driver structure
   uint16_t *adcBuffer; // adc data is written to this buffer
   uint16_t bufferSize; // number of samples in buffer
-  bool isHalfBufferFree[BUFFER_HALF_SIZE]; // flag to mark that the half buffer is free, not in use
-} adc_driver_mod; //TODO check if this should be volatile
+  bool isHalfBufferFree[BUFFER_HALF_SIZE]; // flag to mark that the half buffer is free, not in use //TODO check if this should be volatile
+} adc_driver_mod;
 
 
 /* Public functions */

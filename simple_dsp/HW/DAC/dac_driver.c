@@ -20,15 +20,17 @@
 
 /* Private variables */
 
-static struct dac_driver_tag {  // dac driver structure
-  uint32_t dacBufferAddress;    // buffer address to output via DAC
-  uint16_t dacBufferSize;          // number of samples in buffer
+static struct dac_driver_mod_tag {  // dac driver structure
+  uint16_t *pdacBufferAddress;      // points to buffer to output via DAC
+  uint16_t dacBufferSize;           // number of samples in buffer
+  bool isHalfBufferFree[BUFFER_HALF_SIZE]; // flag to mark that the half buffer is free, not in use //TODO check if this should be volatile
 } dac_driver_mod;
 
 
 /* Private function prototypes */
 static void dac_InitDMA(void);
 static void dac_InitDAC(void);
+static void dac_InitBuffer(void);
 
 
 /* Public functions */
@@ -37,16 +39,32 @@ static void dac_InitDAC(void);
  * Initializes DAC and DMA. The DAC is feed continuously by the DMA in circular buffer mode.
  * DAC conversions are triggered by sampling_timer's update event, therefore sampling_timer
  * must be also enabled
- * @param dacBufferAddress, address of the buffer with the data to be output by DAC
+ * @param pdacBufferAddress, points to buffer to output via DAC
  * @param bufferSize, size of buffer [n samples]
  */
-void dac_Init(uint32_t dacBufferAddress, uint16_t bufferSize) {
-  //TODO assert(dacBufferAddress)
+void dac_Init(uint16_t *pdacBufferAddress, uint16_t bufferSize) {
+  //TODO assert(pdacBufferAddress)
   //TODO assert(bufferSize)
-  dac_driver_mod.dacBufferAddress = dacBufferAddress;
+  dac_driver_mod.pdacBufferAddress = pdacBufferAddress;
   dac_driver_mod.dacBufferSize = bufferSize;
+  dac_driver_mod.isHalfBufferFree[BUFFER_HALF_FIRST] = false;
+  dac_driver_mod.isHalfBufferFree[BUFFER_HALF_SECOND] = false;
   dac_InitDMA();
   dac_InitDAC();
+  dac_InitBuffer();
+}
+
+/**
+ * Returns if the half buffer free and ready to be processed
+ * @param bufferHalf
+ * @return true if half buffer free and ready to be processed
+ */
+bool dac_IsHalfBufferFree(const buffer_half_t bufferHalf) {
+#warning ONLY FOR TEST !!!
+  //return true;
+#warning ONLY FOR TEST !!!
+  // TODO assert (bufferHalf)
+  return dac_driver_mod.isHalfBufferFree[bufferHalf];
 }
 
 
@@ -59,7 +77,7 @@ static void dac_InitDMA(void){
   LL_DMA_ConfigTransfer(DAC_DMA, DAC_DMA_CHANNEL, LL_DMA_DIRECTION_MEMORY_TO_PERIPH
       | LL_DMA_MODE_CIRCULAR | LL_DMA_PERIPH_NOINCREMENT | LL_DMA_MEMORY_INCREMENT
       | LL_DMA_PDATAALIGN_HALFWORD | LL_DMA_MDATAALIGN_HALFWORD | LL_DMA_PRIORITY_HIGH);
-  LL_DMA_ConfigAddresses(DAC_DMA, DAC_DMA_CHANNEL, dac_driver_mod.dacBufferAddress
+  LL_DMA_ConfigAddresses(DAC_DMA, DAC_DMA_CHANNEL, (uint32_t)dac_driver_mod.pdacBufferAddress
       , LL_DAC_DMA_GetRegAddr(DAC_DAC, DAC_DAC_CHANNEL, LL_DAC_DMA_REG_DATA_12BITS_RIGHT_ALIGNED)
       , LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
   LL_DMA_SetDataLength(DAC_DMA, DAC_DMA_CHANNEL, dac_driver_mod.dacBufferSize);
@@ -74,4 +92,14 @@ static void dac_InitDAC(void){
   LL_DAC_EnableDMAReq(DAC_DAC, DAC_DAC_CHANNEL);
   LL_DAC_Enable(DAC_DAC, DAC_DAC_CHANNEL);
   LL_DAC_EnableTrigger(DAC_DAC, DAC_DAC_CHANNEL);
+}
+
+/**
+ * Initializes the buffer to half supply
+ */
+static void dac_InitBuffer(void){
+  uint16_t i;
+  for(i=0;i<dac_driver_mod.dacBufferSize;i++){
+    dac_driver_mod.pdacBufferAddress[i] = 2047;  // 2047 =  half supply
+  }
 }
