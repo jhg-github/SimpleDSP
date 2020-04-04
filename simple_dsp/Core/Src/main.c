@@ -1727,6 +1727,9 @@ void main_Init(void) {
   stalloc_Disable();
 }
 
+//TODO add const to function's parameters
+//TODO add assert to function's parameters
+
 /* USER CODE END 0 */
 
 /**

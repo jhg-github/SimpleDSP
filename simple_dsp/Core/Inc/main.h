@@ -46,6 +46,7 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 
 #include <stdbool.h>
+#include "../../Common/my_typedefs.h"
 
 /* USER CODE END Includes */
 

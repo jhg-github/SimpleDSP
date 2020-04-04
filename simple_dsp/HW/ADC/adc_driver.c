@@ -11,10 +11,10 @@
 
 /* Private variables */
 
-static struct adc_driver_tag { // adc driver structure
+static struct adc_driver_mod_tag { // adc driver structure
   uint16_t *adcBuffer; // adc data is written to this buffer
   uint16_t bufferSize; // number of samples in buffer
-  bool isBufferFull[ADC_BUFFER_NUMBER_SIZE]; // flag to mark that a buffer is full and ready to be processed
+  bool isHalfBufferFree[BUFFER_HALF_SIZE]; // flag to mark that the half buffer is free, not in use
 } adc_driver_mod; //TODO check if this should be volatile
 
 
@@ -26,22 +26,24 @@ static struct adc_driver_tag { // adc driver structure
  * @param bufferSize, number of samples in buffer
  */
 void adc_Init(uint16_t *const adcBuffer, const uint16_t bufferSize) {
+  //TODO assert(adcBuffer)
+  //TODO assert(bufferSize)
   // init driver variables
   adc_driver_mod.adcBuffer = adcBuffer;
   adc_driver_mod.bufferSize = bufferSize;
-  adc_driver_mod.isBufferFull[ADC_BUFFER_NUMBER_0] = false;
-  adc_driver_mod.isBufferFull[ADC_BUFFER_NUMBER_1] = false;
+  adc_driver_mod.isHalfBufferFree[BUFFER_HALF_FIRST] = false;
+  adc_driver_mod.isHalfBufferFree[BUFFER_HALF_SECOND] = false;
 }
 
 /**
- * Returns if a buffer is full and ready to be processed
- * @param bufferNumber
- * @return true if buffer is full and ready to be processed
+ * Returns if the half buffer free and ready to be processed
+ * @param bufferHalf
+ * @return true if half buffer free and ready to be processed
  */
-bool adc_IsBufferFull(const adc_buffer_number_t bufferNumber) {
+bool adc_IsHalfBufferFree(const buffer_half_t bufferHalf) {
 #warning ONLY FOR TEST !!!
   return true;
 #warning ONLY FOR TEST !!!
-  // TODO add assert here
-  return adc_driver_mod.isBufferFull[bufferNumber];
+  // TODO assert (bufferHalf)
+  return adc_driver_mod.isHalfBufferFree[bufferHalf];
 }

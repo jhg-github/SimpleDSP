@@ -37,7 +37,7 @@ static struct dsp_mod_tag {                     // dsp module structure
   float signal_filt[DSP_BLOCK_DEC_N_SAMPLES];   // signal filtered at decimated frequency
   uint16_t dacBuffer[DSP_DAC_BUFFER_N_SAMPLES]; // dac data is written to this buffer
   // control
-  adc_buffer_number_t nextBufferToProcess;      // number of next buffer to process
+  buffer_half_t activeHalfBuffer;               // half buffer to be processed
   dsp_mode_t mode;                              // type of filter to apply
   // filters
   filter_dec_t *pfilter_dec;                    // points to decimation filter instance
@@ -68,18 +68,18 @@ static void dsp_ConvertSignalToUint16(void);
 void dsp_Init(void) {
   // init drivers
   adc_Init(&dsp_mod.adcBuffer[0], DSP_ADC_BUFFER_N_SAMPLES);
+#warning ONLY FOR TEST !!!
   //dac_Init((uint32_t)&dsp_mod.dacBuffer[0], DSP_DAC_BUFFER_N_SAMPLES);
   dac_Init((uint32_t)&filter_tests_sine_table, DSP_DAC_BUFFER_N_SAMPLES);
+#warning ONLY FOR TEST !!!
   // init filters
   dsp_InitFilters();
   // init module variables
-  dsp_mod.nextBufferToProcess = ADC_BUFFER_NUMBER_0;
+  dsp_mod.activeHalfBuffer = BUFFER_HALF_FIRST;
   dsp_mod.mode = DSP_MODE_BYPASS;
 #warning ONLY FOR TEST !!!
   dsp_mod.mode = DSP_MODE_HIGHPASS;
-#warning ONLY FOR TEST !!!
 
-#warning ONLY FOR TEST !!!
   int i;
   for (i = 0; i < (sizeof(filter_tests_signal) / sizeof(filter_tests_signal[0])); i++) {
     dsp_mod.signal_fs[i] = filter_tests_signal[i];
@@ -92,10 +92,16 @@ void dsp_Init(void) {
 /**
  * Dsp module process
  */
+/*TODO implement with a event driveb state machine.
+ * Events can be created:
+ * - Simple. A function before stm like ReadEvents() or GenerateEvents() with a lot of ifs checking for conditions. ex. if flagx==1 then return EVENT_FLAGX
+ * - Complex. Event manager/handler were the servers will publish events and the clients will subscribe to them. when an event is published event manger will transmit it to all subscribed clients
+ */
 void dsp_Process(void) {
-  LL_GPIO_SetOutputPin(LD2_GPIO_Port, LD2_Pin);         // for debugging purposes
-  if (adc_IsBufferFull(dsp_mod.nextBufferToProcess)) {  // adc has filled up the buffer and is ready to be processed
+  LL_GPIO_SetOutputPin(LD2_GPIO_Port, LD2_Pin);           // for debugging purposes
+  if (adc_IsHalfBufferFree(dsp_mod.activeHalfBuffer)) {   // has adc filled up the half buffer and is ready to be processed ?
     if (dsp_mod.mode == DSP_MODE_BYPASS) {
+      //TODO check dac buffer ready else fail, what then?
       dsp_BypassSignal();
     } else {
       // pre-filter
@@ -122,10 +128,10 @@ void dsp_Process(void) {
       dsp_ConvertSignalToUint16();
     }
     // change to next buffer
-    if (dsp_mod.nextBufferToProcess == ADC_BUFFER_NUMBER_0) {
-      dsp_mod.nextBufferToProcess = ADC_BUFFER_NUMBER_1;
+    if (dsp_mod.activeHalfBuffer == BUFFER_HALF_FIRST) {
+      dsp_mod.activeHalfBuffer = BUFFER_HALF_SECOND;
     } else {
-      dsp_mod.nextBufferToProcess = ADC_BUFFER_NUMBER_0;
+      dsp_mod.activeHalfBuffer = BUFFER_HALF_FIRST;
     }
   }
   LL_GPIO_ResetOutputPin(LD2_GPIO_Port, LD2_Pin); // for debugging purposes

@@ -11,15 +11,7 @@
 
 /* Includes */
 #include "main.h"
-
-
-/* Public enums */
-typedef enum {
-  ADC_BUFFER_NUMBER_0,
-  ADC_BUFFER_NUMBER_1,
-  // keep last
-  ADC_BUFFER_NUMBER_SIZE,
-} adc_buffer_number_t;
+#include "../../Modules/DSP/dsp.h"
 
 
 /* Public functions */
@@ -32,10 +24,10 @@ typedef enum {
 void adc_Init(uint16_t *const adcBuffer, const uint16_t bufferSize);
 
 /**
- * Returns if a buffer is full and ready to be processed
- * @param bufferNumber
- * @return true if buffer is full and ready to be processed
+ * Returns if the half buffer free and ready to be processed
+ * @param bufferHalf
+ * @return true if half buffer free and ready to be processed
  */
-bool adc_IsBufferFull(const adc_buffer_number_t bufferNumber);
+bool adc_IsHalfBufferFree(const buffer_half_t bufferHalf);
 
 #endif /* HW_ADC_ADC_DRIVER_H_ */
