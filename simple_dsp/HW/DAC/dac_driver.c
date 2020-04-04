@@ -12,10 +12,12 @@
 
 
 /* Private defines */
-#define DAC_DAC         DAC1
-#define DAC_DAC_CHANNEL LL_DAC_CHANNEL_1
-#define DAC_DMA         DMA1
-#define DAC_DMA_CHANNEL LL_DMA_CHANNEL_3
+#define DAC_DAC                   DAC1
+#define DAC_DAC_CHANNEL           LL_DAC_CHANNEL_1
+#define DAC_DMA                   DMA1
+#define DAC_DMA_CHANNEL           LL_DMA_CHANNEL_3
+#define DAC_DMA_CHANNEL_IRQN      DMA1_Channel3_IRQn
+#define DAC_DMA_CHANNEL_IRQN_PRIO (1)
 
 
 /* Private variables */
@@ -68,12 +70,13 @@ bool dac_IsHalfBufferFree(const buffer_half_t bufferHalf) {
 }
 
 
-/* Private function */
+/* Private functions */
 
 /**
  * Initializes DMA to transfer the data from buffer to DAC
  */
 static void dac_InitDMA(void){
+  // transfer
   LL_DMA_ConfigTransfer(DAC_DMA, DAC_DMA_CHANNEL, LL_DMA_DIRECTION_MEMORY_TO_PERIPH
       | LL_DMA_MODE_CIRCULAR | LL_DMA_PERIPH_NOINCREMENT | LL_DMA_MEMORY_INCREMENT
       | LL_DMA_PDATAALIGN_HALFWORD | LL_DMA_MDATAALIGN_HALFWORD | LL_DMA_PRIORITY_HIGH);
@@ -81,9 +84,16 @@ static void dac_InitDMA(void){
       , LL_DAC_DMA_GetRegAddr(DAC_DAC, DAC_DAC_CHANNEL, LL_DAC_DMA_REG_DATA_12BITS_RIGHT_ALIGNED)
       , LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
   LL_DMA_SetDataLength(DAC_DMA, DAC_DMA_CHANNEL, dac_driver_mod.dacBufferSize);
+
+  // interrupts
+  NVIC_SetPriority(DAC_DMA_CHANNEL_IRQN, DAC_DMA_CHANNEL_IRQN_PRIO);
+  NVIC_EnableIRQ(DAC_DMA_CHANNEL_IRQN);
+  LL_DMA_EnableIT_TC(DAC_DMA, DAC_DMA_CHANNEL);
+  LL_DMA_EnableIT_HT(DAC_DMA, DAC_DMA_CHANNEL);
+
+  // enable dma
   LL_DMA_EnableChannel(DAC_DMA, DAC_DMA_CHANNEL);
 }
-
 
 /**
  * Initializes the DAC to trigger DMA request after each conversion
