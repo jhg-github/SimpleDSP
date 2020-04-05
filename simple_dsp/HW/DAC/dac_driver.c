@@ -25,7 +25,7 @@
 static struct dac_driver_mod_tag {  // dac driver structure
   uint16_t *pdacBufferAddress;      // points to buffer to output via DAC
   uint16_t dacBufferSize;           // number of samples in buffer
-  bool isHalfBufferFree[BUFFER_HALF_SIZE]; // flag to mark that the half buffer is free, not in use //TODO check if this should be volatile
+  volatile bool isHalfBufferFree[BUFFER_HALF_SIZE]; // flag to mark that the half buffer is free, not in use //TODO check if this should be volatile
 } dac_driver_mod;
 
 
@@ -50,7 +50,7 @@ void dac_Init(uint16_t *pdacBufferAddress, uint16_t bufferSize) {
   dac_driver_mod.pdacBufferAddress = pdacBufferAddress;
   dac_driver_mod.dacBufferSize = bufferSize;
   dac_driver_mod.isHalfBufferFree[BUFFER_HALF_FIRST] = false;
-  dac_driver_mod.isHalfBufferFree[BUFFER_HALF_SECOND] = false;
+  dac_driver_mod.isHalfBufferFree[BUFFER_HALF_SECOND] = true;
   dac_InitDMA();
   dac_InitDAC();
   dac_InitBuffer();
@@ -67,6 +67,27 @@ bool dac_IsHalfBufferFree(const buffer_half_t bufferHalf) {
 #warning ONLY FOR TEST !!!
   // TODO assert (bufferHalf)
   return dac_driver_mod.isHalfBufferFree[bufferHalf];
+}
+
+
+
+/**
+  * @brief This function handles DMA1 channel3 global interrupt.
+  */
+static volatile int aux = 0;
+void DMA1_Channel3_IRQHandler(void) {
+  // half buffer transfer complete
+  if(LL_DMA_IsActiveFlag_HT3(DMA1) == 1) {
+    LL_DMA_ClearFlag_HT3(DMA1);
+    dac_driver_mod.isHalfBufferFree[BUFFER_HALF_FIRST] = true;
+    dac_driver_mod.isHalfBufferFree[BUFFER_HALF_SECOND] = false;
+  }
+  // buffer transfer complete
+  if(LL_DMA_IsActiveFlag_TC3(DMA1) == 1) {
+    LL_DMA_ClearFlag_TC3(DMA1);
+    dac_driver_mod.isHalfBufferFree[BUFFER_HALF_FIRST] = false ;
+    dac_driver_mod.isHalfBufferFree[BUFFER_HALF_SECOND] = true ;
+  }
 }
 
 
