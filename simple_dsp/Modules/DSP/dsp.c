@@ -75,17 +75,15 @@ void dsp_Init(void) {
   dsp_mod.activeHalfBuffer = BUFFER_HALF_FIRST;
   dsp_mod.mode = DSP_MODE_BYPASS;
 #warning ONLY FOR TEST !!!
-  dsp_mod.mode = DSP_MODE_HIGHPASS;
-
   int i;
   for (i = 0; i < (sizeof(filter_tests_signal) / sizeof(filter_tests_signal[0])); i++) {
     dsp_mod.signal_fs[i] = filter_tests_signal[i];
   }
   for (i = 0; i < (DSP_DAC_BUFFER_N_SAMPLES/2); i++) {
-    dsp_mod.dacBuffer[i] = 1535 + i;
+    dsp_mod.adcBuffer[i] = 1535 + i;
   }
   for (i = 0; i < (DSP_DAC_BUFFER_N_SAMPLES/2); i++) {
-    dsp_mod.dacBuffer[(DSP_DAC_BUFFER_N_SAMPLES/2)+i] = 2559 - i;
+    dsp_mod.adcBuffer[(DSP_DAC_BUFFER_N_SAMPLES/2)+i] = 2559 - i;
   }
 #warning ONLY FOR TEST !!!
   // start all by enabling sampling timer
@@ -154,8 +152,22 @@ static void dsp_InitFilters(void) {
   dsp_mod.pfilter_int = (filter_int_t *)filter_int_Ctor(FILTER_COEFFS_INT_NTAPS, filter_coeffs_int, DSP_BLOCK_DEC_N_SAMPLES, DSP_INTERPOLATION_FACTOR);
 }
 
-
+/**
+ * Copies the input directly to the output (ADC -> DAC)
+ */
 static void dsp_BypassSignal(void) {
+  uint32_t i;
+  uint32_t offset;
+  // offset for active buffer
+  if (dsp_mod.activeHalfBuffer == BUFFER_HALF_FIRST) {
+    offset = 0;
+  } else {
+    offset = DSP_DAC_BUFFER_N_SAMPLES/2;
+  }
+  // copy buffer
+  for (i = 0; i < (DSP_DAC_BUFFER_N_SAMPLES/2); i++) {
+    dsp_mod.dacBuffer[i+offset] = dsp_mod.adcBuffer[i+offset];
+  }
 }
 
 static void dsp_RemoveDcFromSignal(void) {
