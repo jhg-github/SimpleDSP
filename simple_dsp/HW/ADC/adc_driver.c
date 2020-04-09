@@ -20,6 +20,40 @@ static struct adc_driver_mod_tag { // adc driver structure
 
 /* Public functions */
 
+
+//static volatile uint16_t data;
+//void test(void){
+//  LL_ADC_EnableInternalRegulator(ADC1);
+//  HAL_Delay(10);
+//  LL_ADC_StartCalibration(ADC1, LL_ADC_SINGLE_ENDED);
+//  HAL_Delay(10);
+//  LL_ADC_Enable(ADC1);
+//  HAL_Delay(10);
+//  while(1){
+//    LL_ADC_REG_StartConversion(ADC1);
+//    HAL_Delay(10);
+//    data = LL_ADC_REG_ReadConversionData12(ADC1);
+//  }
+//}
+
+#define SIZE 10
+static volatile uint16_t data[SIZE];
+void test_adc_dma(void){
+  LL_ADC_EnableInternalRegulator(ADC1);
+  HAL_Delay(10);
+  LL_ADC_StartCalibration(ADC1, LL_ADC_SINGLE_ENDED);
+  HAL_Delay(10);
+  LL_ADC_Enable(ADC1);
+  HAL_Delay(10);
+  while(1){
+    LL_ADC_REG_StartConversion(ADC1);
+    HAL_Delay(10);
+    data = LL_ADC_REG_ReadConversionData12(ADC1);
+  }
+}
+
+
+
 /**
  * Initializes adc driver
  * @param adcBuffer, pointer to buffer where the adc writes
@@ -33,6 +67,8 @@ void adc_Init(uint16_t *const adcBuffer, const uint16_t bufferSize) {
   adc_driver_mod.bufferSize = bufferSize;
   adc_driver_mod.isHalfBufferFree[BUFFER_HALF_FIRST] = false;
   adc_driver_mod.isHalfBufferFree[BUFFER_HALF_SECOND] = false;
+
+  test();
 }
 
 /**
