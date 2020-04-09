@@ -36,9 +36,75 @@ static struct adc_driver_mod_tag { // adc driver structure
 //  }
 //}
 
+//#define SIZE 10
+//static volatile uint16_t data[SIZE];
+//void test_adc_dma(void){
+//
+//  //-----------------------------------------------------------
+//  LL_ADC_EnableInternalRegulator(ADC1);
+//  HAL_Delay(10);
+//  LL_ADC_StartCalibration(ADC1, LL_ADC_SINGLE_ENDED);
+//  HAL_Delay(10);
+//
+//  //-----------------------------------------------------------
+//  LL_DMA_ConfigAddresses(DMA1,
+//                         LL_DMA_CHANNEL_1,
+//                         LL_ADC_DMA_GetRegAddr(ADC1, LL_ADC_DMA_REG_REGULAR_DATA),
+//                         (uint32_t)&data,
+//                         LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
+//  LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_1, SIZE);
+//  LL_DMA_EnableIT_TC(DMA1, LL_DMA_CHANNEL_1);
+//  LL_DMA_EnableIT_HT(DMA1, LL_DMA_CHANNEL_1);
+//  LL_DMA_EnableIT_TE(DMA1, LL_DMA_CHANNEL_1);
+//  LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_1);
+//
+//  //-----------------------------------------------------------
+//  LL_ADC_Enable(ADC1);
+//  HAL_Delay(10);
+//  LL_ADC_REG_StartConversion(ADC1);
+//
+//  while(1){
+//    HAL_Delay(10);
+//  }
+//}
+
+//#define SIZE 10
+//static volatile uint16_t data[SIZE];
+//void test_adc_dma(void){
+//
+//  //-----------------------------------------------------------
+//  LL_ADC_EnableInternalRegulator(ADC1);
+//  HAL_Delay(10);
+//  LL_ADC_StartCalibration(ADC1, LL_ADC_SINGLE_ENDED);
+//  HAL_Delay(10);
+//
+//  //-----------------------------------------------------------
+//  LL_DMA_ConfigAddresses(DMA1,
+//                         LL_DMA_CHANNEL_1,
+//                         LL_ADC_DMA_GetRegAddr(ADC1, LL_ADC_DMA_REG_REGULAR_DATA),
+//                         (uint32_t)&data,
+//                         LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
+//  LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_1, SIZE);
+//  LL_DMA_EnableIT_TC(DMA1, LL_DMA_CHANNEL_1);
+//  LL_DMA_EnableIT_HT(DMA1, LL_DMA_CHANNEL_1);
+//  LL_DMA_EnableIT_TE(DMA1, LL_DMA_CHANNEL_1);
+//  LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_1);
+//
+//  //-----------------------------------------------------------
+//  LL_ADC_Enable(ADC1);
+//  HAL_Delay(10);
+//  LL_ADC_REG_StartConversion(ADC1);
+//
+//  while(1){
+//    LL_ADC_REG_StartConversion(ADC1);
+//    HAL_Delay(10);
+//  }
+//}
+
+
 #define SIZE 10
 static volatile uint16_t data[SIZE];
-void test_adc_dma(void){
+void test_adc_dma_tim(void){
 
   //-----------------------------------------------------------
   LL_ADC_EnableInternalRegulator(ADC1);
@@ -62,13 +128,7 @@ void test_adc_dma(void){
   LL_ADC_Enable(ADC1);
   HAL_Delay(10);
   LL_ADC_REG_StartConversion(ADC1);
-
-  while(1){
-    HAL_Delay(10);
-  }
 }
-
-
 
 /**
  * Initializes adc driver
@@ -84,7 +144,7 @@ void adc_Init(uint16_t *const adcBuffer, const uint16_t bufferSize) {
   adc_driver_mod.isHalfBufferFree[BUFFER_HALF_FIRST] = false;
   adc_driver_mod.isHalfBufferFree[BUFFER_HALF_SECOND] = false;
 
-  test_adc_dma();
+  test_adc_dma_tim();
 }
 
 /**
