@@ -18,10 +18,10 @@
 
 /**
  * Initializes adc driver
- * @param adcBuffer, pointer to buffer where the adc writes
+ * @param padcBuffer, pointer to buffer where the adc writes
  * @param bufferSize, number of samples in buffer
  */
-void adc_Init(uint16_t *const adcBuffer, const uint16_t bufferSize);
+void adc_Init(uint16_t *padcBuffer, uint16_t bufferSize);
 
 /**
  * Returns if the half buffer free and ready to be processed

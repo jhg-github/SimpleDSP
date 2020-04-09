@@ -12,7 +12,7 @@
 /* Private variables */
 
 static struct adc_driver_mod_tag { // adc driver structure
-  uint16_t *adcBuffer; // adc data is written to this buffer
+  uint16_t *padcBuffer; // adc data is written to this buffer
   uint16_t bufferSize; // number of samples in buffer
   bool isHalfBufferFree[BUFFER_HALF_SIZE]; // flag to mark that the half buffer is free, not in use //TODO check if this should be volatile
 } adc_driver_mod;
@@ -139,11 +139,11 @@ static void adc_InitADC(void);
  * @param adcBuffer, pointer to buffer where the adc writes
  * @param bufferSize, number of samples in buffer
  */
-void adc_Init(uint16_t *const adcBuffer, const uint16_t bufferSize) {
+void adc_Init(uint16_t *padcBuffer, uint16_t bufferSize) {
   //TODO assert(adcBuffer)
   //TODO assert(bufferSize)
   // init driver variables
-  adc_driver_mod.adcBuffer = adcBuffer;
+  adc_driver_mod.padcBuffer = padcBuffer;
   adc_driver_mod.bufferSize = bufferSize;
   adc_driver_mod.isHalfBufferFree[BUFFER_HALF_FIRST] = false;
   adc_driver_mod.isHalfBufferFree[BUFFER_HALF_SECOND] = false;
@@ -196,7 +196,7 @@ static void adc_InitDMA(void){
   LL_DMA_ConfigAddresses(DMA1,
                          LL_DMA_CHANNEL_1,
                          LL_ADC_DMA_GetRegAddr(ADC1, LL_ADC_DMA_REG_REGULAR_DATA),
-                         (uint32_t)&adc_driver_mod.adcBuffer,
+                         (uint32_t)adc_driver_mod.padcBuffer,
                          LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
   LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_1, adc_driver_mod.bufferSize);
 
