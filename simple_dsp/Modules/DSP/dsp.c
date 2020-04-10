@@ -51,7 +51,6 @@ static struct dsp_mod_tag {                     // dsp module structure
 /* Private function prototypes */
 static void dsp_InitFilters(void);
 static void dsp_BypassSignal(void);
-static void dsp_RemoveDcFromSignal(void);
 static void dsp_ConvertSignalToFloat(void);
 static void dsp_DecimateSignal(void);
 static void dsp_LowPassSignal(void);
@@ -73,7 +72,7 @@ void dsp_Init(void) {
   dsp_InitFilters();
   // init module variables
   dsp_mod.activeHalfBuffer = BUFFER_HALF_FIRST;
-  dsp_mod.mode = DSP_MODE_BYPASS;
+  dsp_mod.mode = DSP_MODE_BANDPASS;
   // start all by enabling sampling timer
   sampling_timer_Start();
 }
@@ -95,7 +94,6 @@ void dsp_Process(void) {
       dsp_BypassSignal();
     } else {
       // pre-filter
-      dsp_RemoveDcFromSignal();
       dsp_ConvertSignalToFloat();
       dsp_DecimateSignal();
       // filter
@@ -158,10 +156,22 @@ static void dsp_BypassSignal(void) {
   }
 }
 
-static void dsp_RemoveDcFromSignal(void) {
-}
-
+/**
+ * Converts signal from uint (adc buffer) to float
+ */
 static void dsp_ConvertSignalToFloat(void) {
+  uint32_t i;
+  uint32_t offset;
+  // offset for active buffer
+  if (dsp_mod.activeHalfBuffer == BUFFER_HALF_FIRST) {  //TODO make this a function
+    offset = 0;
+  } else {
+    offset = DSP_ADC_BUFFER_N_SAMPLES/2;
+  }
+  // copy buffer
+  for (i = 0; i < DSP_BLOCK_FS_N_SAMPLES; i++) {
+    dsp_mod.signal_fs[i] = ((float)dsp_mod.adcBuffer[i+offset] - 2048.0f)/2048.0f;
+  }
 }
 
 /**
@@ -196,8 +206,20 @@ static void dsp_HighPassSignal(void) {
  * Interpolates the signal from a sampling frequency of 6KHz to 48KHz with cutoff freq 2.2KHz
  */
 static void dsp_InterpolateSignal(void) {
-  filter_int_Interpolate(dsp_mod.pfilter_int, dsp_mod.signal_dec, dsp_mod.signal_fs);
+  filter_int_Interpolate(dsp_mod.pfilter_int, dsp_mod.signal_filt, dsp_mod.signal_fs);
 }
 
 static void dsp_ConvertSignalToUint16(void) {
+  uint32_t i;
+  uint32_t offset;
+  // offset for active buffer
+  if (dsp_mod.activeHalfBuffer == BUFFER_HALF_FIRST) {
+    offset = 0;
+  } else {
+    offset = DSP_DAC_BUFFER_N_SAMPLES/2;
+  }
+  // copy buffer
+  for (i = 0; i < (DSP_DAC_BUFFER_N_SAMPLES/2); i++) {
+    dsp_mod.dacBuffer[i+offset] = (uint16_t)((dsp_mod.signal_fs[i]*2048.0f)+2048.0f);
+  }
 }
