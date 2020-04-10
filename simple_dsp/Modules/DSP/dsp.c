@@ -58,6 +58,7 @@ static void dsp_BandPassSignal(void);
 static void dsp_HighPassSignal(void);
 static void dsp_InterpolateSignal(void);
 static void dsp_ConvertSignalToUint16(void);
+static uint16_t dsp_GetBufferOffset(void);
 
 /* Public functions */
 
@@ -80,7 +81,7 @@ void dsp_Init(void) {
 /**
  * Dsp module process
  */
-/*TODO implement with a event driveb state machine.
+/*TODO implement with a event driven state machine.
  * Events can be created:
  * - Simple. A function before stm like ReadEvents() or GenerateEvents() with a lot of ifs checking for conditions. ex. if flagx==1 then return EVENT_FLAGX
  * - Complex. Event manager/handler were the servers will publish events and the clients will subscribe to them. when an event is published event manger will transmit it to all subscribed clients
@@ -143,13 +144,7 @@ static void dsp_InitFilters(void) {
  */
 static void dsp_BypassSignal(void) {
   uint32_t i;
-  uint32_t offset;
-  // offset for active buffer
-  if (dsp_mod.activeHalfBuffer == BUFFER_HALF_FIRST) {
-    offset = 0;
-  } else {
-    offset = DSP_DAC_BUFFER_N_SAMPLES/2;
-  }
+  uint16_t offset = dsp_GetBufferOffset();
   // copy buffer
   for (i = 0; i < (DSP_DAC_BUFFER_N_SAMPLES/2); i++) {
     dsp_mod.dacBuffer[i+offset] = dsp_mod.adcBuffer[i+offset];
@@ -161,16 +156,10 @@ static void dsp_BypassSignal(void) {
  */
 static void dsp_ConvertSignalToFloat(void) {
   uint32_t i;
-  uint32_t offset;
-  // offset for active buffer
-  if (dsp_mod.activeHalfBuffer == BUFFER_HALF_FIRST) {  //TODO make this a function
-    offset = 0;
-  } else {
-    offset = DSP_ADC_BUFFER_N_SAMPLES/2;
-  }
+  uint16_t offset = dsp_GetBufferOffset();
   // copy buffer
   for (i = 0; i < DSP_BLOCK_FS_N_SAMPLES; i++) {
-    dsp_mod.signal_fs[i] = ((float)dsp_mod.adcBuffer[i+offset] - 2048.0f)/2048.0f;
+    dsp_mod.signal_fs[i] = ((float)dsp_mod.adcBuffer[i+offset] - 2048.0f)/2048.0f;  // removes dc (aprox.) and makes signal [-1,1]
   }
 }
 
@@ -209,17 +198,29 @@ static void dsp_InterpolateSignal(void) {
   filter_int_Interpolate(dsp_mod.pfilter_int, dsp_mod.signal_filt, dsp_mod.signal_fs);
 }
 
+/**
+ * Converts the filtered signal to uin16_t and copies it to dac buffer
+ */
 static void dsp_ConvertSignalToUint16(void) {
   uint32_t i;
-  uint32_t offset;
+  uint16_t offset = dsp_GetBufferOffset();
+  // copy buffer
+  for (i = 0; i < (DSP_DAC_BUFFER_N_SAMPLES/2); i++) {
+    dsp_mod.dacBuffer[i+offset] = (uint16_t)((dsp_mod.signal_fs[i]*2048.0f)+2048.0f); // inverse of dsp_ConvertSignalToFloat()
+  }
+}
+
+/**
+ * Returns index offset of active buffer
+ * @return index offset of active buffer
+ */
+static uint16_t dsp_GetBufferOffset(void){
+  uint16_t offset;
   // offset for active buffer
   if (dsp_mod.activeHalfBuffer == BUFFER_HALF_FIRST) {
     offset = 0;
   } else {
     offset = DSP_DAC_BUFFER_N_SAMPLES/2;
   }
-  // copy buffer
-  for (i = 0; i < (DSP_DAC_BUFFER_N_SAMPLES/2); i++) {
-    dsp_mod.dacBuffer[i+offset] = (uint16_t)((dsp_mod.signal_fs[i]*2048.0f)+2048.0f);
-  }
+  return offset;
 }
