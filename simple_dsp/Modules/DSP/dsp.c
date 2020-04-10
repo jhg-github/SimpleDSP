@@ -74,18 +74,6 @@ void dsp_Init(void) {
   // init module variables
   dsp_mod.activeHalfBuffer = BUFFER_HALF_FIRST;
   dsp_mod.mode = DSP_MODE_BYPASS;
-#warning ONLY FOR TEST !!!
-//  int i;
-//  for (i = 0; i < (sizeof(filter_tests_signal) / sizeof(filter_tests_signal[0])); i++) {
-//    dsp_mod.signal_fs[i] = filter_tests_signal[i];
-//  }
-//  for (i = 0; i < (DSP_DAC_BUFFER_N_SAMPLES/2); i++) {
-//    dsp_mod.adcBuffer[i] = 1535 + i;
-//  }
-//  for (i = 0; i < (DSP_DAC_BUFFER_N_SAMPLES/2); i++) {
-//    dsp_mod.adcBuffer[(DSP_DAC_BUFFER_N_SAMPLES/2)+i] = 2559 - i;
-//  }
-#warning ONLY FOR TEST !!!
   // start all by enabling sampling timer
   sampling_timer_Start();
 }

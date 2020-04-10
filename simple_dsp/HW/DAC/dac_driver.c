@@ -62,9 +62,6 @@ void dac_Init(uint16_t *pdacBufferAddress, uint16_t bufferSize) {
  * @return true if half buffer free and ready to be processed
  */
 bool dac_IsHalfBufferFree(const buffer_half_t bufferHalf) {
-#warning ONLY FOR TEST !!!
-  //return true;
-#warning ONLY FOR TEST !!!
   // TODO assert (bufferHalf)
   return dac_driver_mod.isHalfBufferFree[bufferHalf];
 }
