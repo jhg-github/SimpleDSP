@@ -18,7 +18,7 @@
 
 /**
  * Initializes adc driver
- * @param padcBuffer, pointer to buffer where the adc writes
+ * @param adcBuffer, pointer to buffer where the adc writes
  * @param bufferSize, number of samples in buffer
  */
 void adc_Init(uint16_t *padcBuffer, uint16_t bufferSize);
@@ -29,5 +29,11 @@ void adc_Init(uint16_t *padcBuffer, uint16_t bufferSize);
  * @return true if half buffer free and ready to be processed
  */
 bool adc_IsHalfBufferFree(const buffer_half_t bufferHalf);
+
+/**
+  * @brief This function handles DMA1 channel1 global interrupt.
+  */
+void DMA1_Channel1_IRQHandler(void);
+
 
 #endif /* HW_ADC_ADC_DRIVER_H_ */

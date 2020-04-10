@@ -101,12 +101,24 @@ static void adc_InitDMA(void){
  * Initializes the ADC
  */
 static void adc_InitADC(void){
+  uint32_t timeout = 10;
   LL_ADC_EnableInternalRegulator(ADC_ADC);
-  HAL_Delay(10);
+  HAL_Delay(1);                                           // small delay to wait for internal regulator stabilization
   LL_ADC_StartCalibration(ADC_ADC, LL_ADC_SINGLE_ENDED);
-  HAL_Delay(10);
+  while (LL_ADC_IsCalibrationOnGoing(ADC_ADC) != 0){      // wait for calibration
+    if(--timeout == 0){                                   // failed to calibrate adc
+      // TODO assert(false)
+    }
+    HAL_Delay(1);
+  }
   LL_ADC_Enable(ADC_ADC);
-  HAL_Delay(10);
-  LL_ADC_REG_StartConversion(ADC_ADC);
+  timeout = 10;
+  while (LL_ADC_IsActiveFlag_ADRDY(ADC_ADC) == 0){        // wait ready for conversion
+    if(--timeout == 0){
+      // TODO assert(false)
+    }
+    HAL_Delay(1);
+  }
+  LL_ADC_REG_StartConversion(ADC_ADC);                    // enables conversion
 }
 
