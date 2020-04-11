@@ -126,6 +126,20 @@ void dsp_Process(void) {
   }
 }
 
+/**
+ * Changes dsp mode
+ * - DSP_MODE_BYPASS
+ * - DSP_MODE_LOWPASS
+ * - DSP_MODE_BANDPASS
+ * - DSP_MODE_HIGHPASS
+ * @param newMode dsp mode
+ */
+void dsp_ChangeDSPMode(dsp_mode_t newMode){
+  //TODO assert valid mode
+  dsp_mod.mode = newMode;
+}
+
+
 /* Private functions */
 
 /**
